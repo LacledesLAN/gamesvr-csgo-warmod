@@ -1,0 +1,131 @@
+"TeamLogos"
+{
+	"Divisions"
+	{
+		"1"
+		{
+			"name"	"Division 1"
+			"config" "warmod/ruleset_default.cfg"
+			"1A"
+			{
+				"name"	"Group A"
+			}
+			"1B"
+			{
+				"name"	"Group B"
+			}
+		}
+		"2"
+		{
+			"name"	"Division 2"
+			"config" "warmod/ruleset_overtime.cfg"
+			"2A"
+			{
+				"name"	"Group A"
+			}
+			"2B"
+			{
+				"name"	"Group B"
+			}
+		}
+		"3"
+		{
+			"name"	"Division 3"
+			"config" "warmod/ruleset_default.cfg"
+			"3A"
+			{
+				"name"	"Group A"
+			}
+			"3B"
+			{
+				"name"	"Group B"
+			}
+			"3C"
+			{
+				"name"	"Group C"
+			}
+			"3D"
+			{
+				"name"	"Group D"
+			}
+			"3E"
+			{
+				"name"	"Group E"
+			}
+			"3F"
+			{
+				"name"	"Group F"
+			}
+			"3G"
+			{
+				"name"	"Group G"
+			}
+			"3H"
+			{
+				"name"	"Group H"
+			}
+		}
+		"O"
+		{
+			"name"	"Open"
+			"config" "warmod/ruleset_overtime.cfg"
+		}
+	}
+	"Teams"
+	{
+		"ve"
+		{
+			"name"	"Vox Eminor"
+			"div"	"1A"
+			"flag"	"au"
+		}
+		"immun"
+		{
+			"name"	"Team Immunity"
+			"div"	"1A"
+			"flag"	"au"
+		}
+		"avant"
+		{
+			"name"	"Avant Garde"
+			"div"	"1A"
+			"flag"	"au"
+		}
+		"tmv"
+		{
+			"name"	"Team Molotov"
+			"div"	"1A"
+			"flag"	"au"
+		}
+		"x5"
+		{
+			"name"	"Team Exile-5"
+			"div"	"1B"
+			"flag"	"au"
+		}
+		"direw"
+		{
+			"name"	"Dire Wolves"
+			"div"	"1B"
+			"flag"	"au"
+		}
+		"ss"
+		{
+			"name"	"Sneaky Assassins"
+			"div"	"1B"
+			"flag"	"au"
+		}
+		"rng"
+		{
+			"name"	"Renegades"
+			"div"	"1B"
+			"flag"	"au"
+		}
+		"fract"
+		{
+			"name"	"Team Fractic"
+			"div"	"O"
+			"flag"	"au"
+		}
+	}
+}

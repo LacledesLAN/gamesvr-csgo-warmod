@@ -1,0 +1,27 @@
+"Captains"
+{
+	"STEAM_1:0:635066"
+	{
+		"name"	"Versatile BFG"
+		"teamname" "BFG"
+		"teamlogo" "bfg"
+	}
+	"STEAM_1:0:635066"
+	{
+		"name"	"Versatile BFG"
+		"teamname" "BFG"
+		"teamlogo" "bfg"
+	}
+	"STEAM_1:0:635066"
+	{
+		"name"	"Versatile BFG"
+		"teamname" "BFG"
+		"teamlogo" "bfg"
+	}
+	"STEAM_1:0:635066"
+	{
+		"name"	"Versatile BFG"
+		"teamname" "BFG"
+		"teamlogo" "bfg"
+	}
+}

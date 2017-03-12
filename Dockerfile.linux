@@ -27,8 +27,9 @@ COPY ./dist /app/bin/
 		rm -rf /tmp/*
 
 # CLEAN UP
-RUN usermod -l CSGO.Tourney CSGO
+RUN usermod -l CSGOTourney CSGO
 
-USER CSGO.Tourney
-	
+#USER CSGOTourney
+User root
+
 WORKDIR /app/bin/

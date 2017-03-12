@@ -36,7 +36,7 @@ float g_match_start;
 Handle hDatabase = INVALID_HANDLE;
 ConVar wm_upload_results;
 ConVar wm_table_name;
-ConVar wm_table_name_players;
+//ConVar wm_table_name_players;
 ConVar wm_table_round_stats;
 int lt_match_length;
 char lt_map[64];
@@ -55,10 +55,10 @@ int lt_ct_first_half_score;
 int lt_ct_second_half_score;
 int lt_ct_overtime_score;
 char lt_log_file_name[128];
-char sql_steamid64[MAXPLAYERS + 1][64];
-char sql_player_name[MAXPLAYERS + 1][64];
-int sql_player_team[MAXPLAYERS + 1];
-int sql_player_count;
+//char sql_steamid64[MAXPLAYERS + 1][64];
+//char sql_player_name[MAXPLAYERS + 1][64];
+//int sql_player_team[MAXPLAYERS + 1];
+//int sql_player_count;
 int match_id;
 
 // Offsets
@@ -70,7 +70,7 @@ char g_log_filename[128];
 Handle g_log_file = INVALID_HANDLE;
 char g_log_veto_filename[128];
 Handle g_log_veto_file = INVALID_HANDLE;
-char weapon_list[][] = {"ak47", "m4a1_silencer", "m4a1_silencer_off", "m4a1", "galilar", "famas", "awp", "p250", "cz75a", "glock", "hkp2000", "usp_silencer", "usp_silencer_off", "ump45", "p90", "bizon", "mp7", "nova", "knife", "elite", "fiveseven", "deagle", "tec9", "ssg08", "scar20", "aug", "sg556", "g3sg1", "mac10", "mp9", "mag7", "negev", "m249", "sawedoff", "incgrenade", "flashbang", "smokegrenade", "hegrenade", "molotov", "decoy", "taser"};
+char weapon_list[][] = {"ak47", "m4a1_silencer", "m4a1_silencer_off", "m4a1", "galilar", "famas", "awp", "p250", "cz75a", "glock", "hkp2000", "usp_silencer", "usp_silencer_off", "ump45", "p90", "bizon", "mp7", "nova", "knife", "elite", "fiveseven", "deagle", "revolver", "tec9", "ssg08", "scar20", "aug", "sg556", "g3sg1", "mac10", "mp9", "mag7", "negev", "m249", "sawedoff", "incgrenade", "flashbang", "smokegrenade", "hegrenade", "molotov", "decoy", "taser"};
 int weapon_stats[MAXPLAYERS + 1][NUM_WEAPONS][LOG_HIT_NUM];
 int clutch_stats[MAXPLAYERS + 1][CLUTCH_NUM];
 int assist_stats[MAXPLAYERS + 1][ASSIST_NUM];
@@ -91,6 +91,7 @@ char g_server[255];
 
 /* forwards */
 Handle g_f_on_lo3 = INVALID_HANDLE;
+Handle g_f_on_round_end = INVALID_HANDLE;
 Handle g_f_on_half_time = INVALID_HANDLE;
 Handle g_f_on_reset_half = INVALID_HANDLE;
 Handle g_f_on_reset_match = INVALID_HANDLE;
@@ -148,7 +149,10 @@ ConVar mp_teamname_1;
 ConVar mp_teamname_2;
 ConVar mp_teamlogo_1;
 ConVar mp_teamlogo_2;
+ConVar mp_teamflag_1;
+ConVar mp_teamflag_2;
 ConVar wm_ready_tag;
+ConVar wm_ready_panel;
 
 
 ConVar mp_startmoney;
@@ -175,6 +179,7 @@ bool g_t_knife = true;
 bool g_t_had_knife = false;
 bool g_second_half_first = false;
 bool g_setNameLimiter = true;
+bool g_DispInfoLimiter = true;
 bool LiveOn2 = false;
 bool LiveOn1 = false;
 bool LiveOn3Text = false;
@@ -291,6 +296,18 @@ bool veto_offer_ct = false;
 bool veto_offer_t = false;
 Handle g_h_stored_timer_v = INVALID_HANDLE;
 
+/* Print Damage */
+int g_DamageDone[MAXPLAYERS+1][MAXPLAYERS+1];
+int g_DamageDoneHits[MAXPLAYERS+1][MAXPLAYERS+1];
+bool g_GotKill[MAXPLAYERS+1][MAXPLAYERS+1];
+ConVar wm_damageprint_auto_color;
+ConVar wm_damageprint_enabled;
+ConVar wm_damageprint_format;
+
+/* Teams */
+bool team_switch = false;
+ConVar wm_name_fix;
+
 /* BanOn Disconnect */
 bool g_disconnect[MAXPLAYERS + 1] = false;
 ConVar wm_ban_on_disconnect;
@@ -306,13 +323,14 @@ int g_teamNumber_t = 0;
 bool g_tag_set = false;
 ConVar wm_random_team_names;
 
-
+bool g_first_load = true;
+int g_map_loaded = 0;
 /* admin menu */
 Handle g_h_menu = INVALID_HANDLE;
 
 /* Plugin info */
-#define UPDATE_URL				"http://warmod.bitbucket.org/updatefile.txt"
-#define WM_VERSION				"15.10.05.0938"
+#define UPDATE_URL				"https://warmod.bitbucket.io/updatefile.txt"
+#define WM_VERSION				"17.01.22.1317"
 #define WM_DESCRIPTION			"An automative service for CS:GO competition matches"
 
 public Plugin myinfo = {
@@ -340,6 +358,8 @@ public void OnPluginStart()
 		Updater_AddPlugin(UPDATE_URL);
 	}
 	
+	g_first_load = true;
+	
 	CheckConFigFiles(WM_VERSION);
 	
 	LoadTranslations("warmod.phrases");
@@ -355,7 +375,8 @@ public void OnPluginStart()
 	}
 	
 	g_f_on_lo3 = CreateGlobalForward("OnLiveOn3", ET_Ignore);
-	g_f_on_half_time = CreateGlobalForward("OnHalfTime", ET_Ignore);
+	g_f_on_round_end = CreateGlobalForward("OnRoundEnd", ET_Ignore, Param_String, Param_Cell, Param_Cell, Param_String);
+	g_f_on_half_time = CreateGlobalForward("OnHalfTime", ET_Ignore, Param_String, Param_Cell, Param_Cell, Param_String);
 	g_f_on_reset_half = CreateGlobalForward("OnResetHalf", ET_Ignore);
 	g_f_on_reset_match = CreateGlobalForward("OnResetMatch", ET_Ignore);
 	g_f_on_end_match = CreateGlobalForward("OnEndMatch", ET_Ignore, Param_String, Param_Cell, Param_Cell, Param_String);
@@ -488,9 +509,10 @@ public void OnPluginStart()
 	wm_active = CreateConVar("wm_active", "1", "Enable or disable WarMod as active", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_warmod_safemode = CreateConVar("wm_warmod_safemode", "0", "This disables features that usually break on a CS:GO update", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_rcon_only = CreateConVar("wm_rcon_only", "0", "Enable or disable admin commands to be only executed via RCON or console", FCVAR_NONE, true, 0.0, true, 1.0);
-	CreateConVar("wm_version_notify", WM_VERSION, WM_DESCRIPTION, FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar("wm_version_notify", WM_VERSION, WM_DESCRIPTION, FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	
 	wm_chat_prefix = CreateConVar("wm_chat_prefix", "WarMod_BFG", "Change the chat prefix. Default is WarMod_BFG", FCVAR_PROTECTED);
+	wm_ready_panel = CreateConVar("wm_ready_panel", "1", "Enable Ready Panel or text based system, Text = 0, Panel = 1", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_ready_tag = CreateConVar("wm_ready_tag", "1", "Enable or disable the ready & not ready clan tags", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_lock_teams = CreateConVar("wm_lock_teams", "1", "Enable or disable locked teams when a match is running", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_min_ready = CreateConVar("wm_min_ready", "10", "Sets the minimum required ready players to Live on 3", FCVAR_NOTIFY);
@@ -520,13 +542,13 @@ public void OnPluginStart()
 	wm_auto_record = CreateConVar("wm_auto_record", "1", "Enable or disable auto SourceTV demo record on Live on 3", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_save_dir = CreateConVar("wm_save_dir", "warmod", "Directory to store SourceTV demos and WarMod logs");
 	wm_prefix_logs = CreateConVar("wm_prefix_logs", "1", "Enable or disable the prefixing of \"_\" to uncompleted match SourceTV demos and WarMod logs", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	wm_competition = CreateConVar("wm_competition", "WarMod BFG", "Name of host for a competition. eg. ESEA, Cybergamer, CEVO, ESL", FCVAR_PLUGIN);
-	wm_event = CreateConVar("wm_event", "scrim", "Name of event. eg. Season #, ODC #, Ladder", FCVAR_PLUGIN);
+	wm_competition = CreateConVar("wm_competition", "WarMod BFG", "Name of host for a competition. eg. ESEA, Cybergamer, CEVO, ESL");
+	wm_event = CreateConVar("wm_event", "scrim", "Name of event. eg. Season #, ODC #, Ladder");
 	
 	/* SQL Settings */
 	wm_upload_results = CreateConVar("wm_upload_results", "0", "Enable or disable the uploading of match results via MySQL", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_table_name = CreateConVar("wm_table_name", "wm_results", "The MySQL table name to store match results in");
-	wm_table_name_players = CreateConVar("wm_table_name_players", "wm_players", "The MySQL table name to store match players in");
+	//wm_table_name_players = CreateConVar("wm_table_name_players", "wm_players", "The MySQL table name to store match players in");
 	wm_table_round_stats = CreateConVar("wm_table_round_stats", "wm_round_stats", "The MySQL table name to store round stats in");
 	
 	/* Config Convars */
@@ -553,14 +575,15 @@ public void OnPluginStart()
 	wm_knife_zeus = CreateConVar("wm_knife_zeus", "0", "Enable or disable giving a player a zeus on Knife on 3", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_knife_armor = CreateConVar("wm_knife_armor", "1", "Enable or disable giving a player Armor on Knife on 3", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_knife_helmet = CreateConVar("wm_knife_helmet", "0", "Enable or disable giving a player a Helmet on Knife on 3 [requires armor active]", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	wm_name_fix = CreateConVar("wm_name_fix", "0", "Fix name swap after knife round", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	
 	/* FTP Upload Convars */
-	wm_autodemoupload_enable = CreateConVar("wm_autodemoupload_enable", "1", "Automatically upload demos when finished recording.", FCVAR_NOTIFY|FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	wm_autodemoupload_bzip2 = CreateConVar("wm_autodemoupload_bzip2", "9", "Compression level. If set > 0 demos will be compressed before uploading. (Requires bzip2 extension.)", FCVAR_PLUGIN, true, 0.0, true, 9.0);
-	wm_autodemoupload_delete = CreateConVar("wm_autodemoupload_delete", "0", "Delete the demo (and the bz2) if upload was successful.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	wm_autodemoupload_ftptargetdemo = CreateConVar("wm_autodemoupload_ftptargetdemo", "demos", "The ftp target to use for demo uploads.", FCVAR_PLUGIN);
-	wm_autodemoupload_ftptargetlog = CreateConVar("wm_autodemoupload_ftptargetlog", "logs", "The ftp target to use for log uploads.", FCVAR_PLUGIN);
-	wm_autodemoupload_completed  = CreateConVar("wm_autodemoupload_completed", "1", "Only upload demos when match is completed.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	wm_autodemoupload_enable = CreateConVar("wm_autodemoupload_enable", "1", "Automatically upload demos when finished recording.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	wm_autodemoupload_bzip2 = CreateConVar("wm_autodemoupload_bzip2", "9", "Compression level. If set > 0 demos will be compressed before uploading. (Requires bzip2 extension.)", FCVAR_NOTIFY, true, 0.0, true, 9.0);
+	wm_autodemoupload_delete = CreateConVar("wm_autodemoupload_delete", "0", "Delete the demo (and the bz2) if upload was successful.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	wm_autodemoupload_ftptargetdemo = CreateConVar("wm_autodemoupload_ftptargetdemo", "demos", "The ftp target to use for demo uploads.");
+	wm_autodemoupload_ftptargetlog = CreateConVar("wm_autodemoupload_ftptargetlog", "logs", "The ftp target to use for log uploads.");
+	wm_autodemoupload_completed  = CreateConVar("wm_autodemoupload_completed", "1", "Only upload demos when match is completed.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	
 	/* Pause Convars */
 	sv_pausable = FindConVar("sv_pausable");
@@ -582,9 +605,14 @@ public void OnPluginStart()
 	wm_veto_select = CreateConVar("wm_veto_select", "1", "On last two maps of Veto Bo1 will it be select map to play: 0 = No, 1 = Yes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	wm_captain_from_file = CreateConVar("wm_captain_from_file", "0", "Get team captains from file? 0 = No, 1 = Yes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	
+	/* Damage Printer */
+	wm_damageprint_auto_color = CreateConVar("wm_damageprint_auto_color", "1", "Whether colors are automatically inserted for damage values, changing depending on if the damage resulted in a kill");
+	wm_damageprint_enabled = CreateConVar("wm_damageprint_enabled", "0", "Whether to enabled damage print to client on round end");
+	wm_damageprint_format = CreateConVar("wm_damageprint_format", "--> ({DMG_TO} dmg / {HITS_TO} hits) to ({DMG_FROM} dmg / {HITS_FROM} hits) from {NAME} ({HEALTH} HP)", "Format of the damage output string. Avaliable tags are in the default, color tags such as {LIGHT_RED} and {GREEN} also work.");
+	
 	g_MapNames = CreateArray(PLATFORM_MAX_PATH);
 	
-	g_iAccount = FindSendPropOffs("CCSPlayer", "m_iAccount");
+	g_iAccount = FindSendPropInfo("CCSPlayer", "m_iAccount");
 	hostname = FindConVar("hostname");
 	
 	mp_startmoney = FindConVar("mp_startmoney");
@@ -596,6 +624,8 @@ public void OnPluginStart()
 	mp_teamname_2 = FindConVar("mp_teamname_2");
 	mp_teamlogo_1 = FindConVar("mp_teamlogo_1");
 	mp_teamlogo_2 = FindConVar("mp_teamlogo_2");
+	mp_teamflag_1 = FindConVar("mp_teamflag_1");
+	mp_teamflag_2 = FindConVar("mp_teamflag_2");
 	
 	tv_delaymapchange = FindConVar("tv_delaymapchange");
 	tv_delay = FindConVar("tv_delay");
@@ -680,6 +710,7 @@ public void OnConfigsExecuted()
 
 public void OnMapStart()
 {
+	g_map_loaded++;
 	ServerCommand("exec warmod/on_map_load.cfg");
 	AddTeamLogosToDownloadTable();
 	char g_MapName[64];
@@ -833,7 +864,9 @@ public void OnClientDisconnect(int client)
 	g_clanTagsChecked[client] = false;
 	
 	// log player stats
-	LogPlayerStats(client, 0);
+	if (g_live && GameRules_GetProp("m_bFreezePeriod") == 0 && (GetTTotalScore() + GetCTTotalScore()) != 0) {
+		LogPlayerStats(client);
+	}
 	
 	if (!IsActive(client, true))
 	{
@@ -922,10 +955,14 @@ void ResetMatch(bool silent, bool complete) {
 	g_t_had_knife = false;
 	g_tag_set = false;
 	g_setNameLimiter = true;
+	g_DispInfoLimiter = true;
 	SetAllCancelled(false);
 	ReadyChangeAll(0, false, true);
 	ResetMatchScores();
-	ResetTeams();
+	if (!g_first_load && g_map_loaded > 2) {
+		ResetTeams();
+	}
+	g_first_load = false;
 	g_overtime = false;
 	g_overtime_count = 0;
 	g_t_pause_count = 0;
@@ -952,6 +989,8 @@ void ResetMatch(bool silent, bool complete) {
 	
 	playout_offer_ct = false;
 	playout_offer_t = false;
+	
+	team_switch = false;
 	
 	g_auto_pause = false;
 	ServerCommand("mp_unpause_match 1");
@@ -985,7 +1024,7 @@ void ResetMatch(bool silent, bool complete) {
 	// stop tv recording after 5 seconds
 	CreateTimer(5.0, StopRecord);
 	CreateTimer(5.0, LogFileUpload);
-	CreateTimer(10.0, SQL_Player_Info_Clear);
+//	CreateTimer(10.0, SQL_Player_Info_Clear);
 	
 	if (GetConVarBool(wm_auto_ready))
 	{
@@ -1309,6 +1348,10 @@ static void AutoPause()
 
 public Action Pause(int client, int args)
 {
+	if (client == 0){
+		return Plugin_Handled;
+	}
+	
 	if (GetConVarBool(sv_pausable) && g_live)
     {
 		if (GetConVarBool(wm_pause_confirm))
@@ -1499,8 +1542,7 @@ public Action Pause(int client, int args)
 
 public Action Unpause(int client, int args)
 {
-	if (IsPaused())
-	{
+	if (IsPaused() && client != 0) {
 		if (GetConVarBool(wm_unpause_confirm))
 		{
 			if (GetClientTeam(client) == 3 && g_pause_offered_ct == false && g_pause_offered_t == false)
@@ -2716,6 +2758,12 @@ void DisplayScore(int client, int msgindex, bool priv)
 
 public void GetScoreMsg(int client, char[] result, int maxlen, int t_score, int ct_score) {
 	SetGlobalTransTarget(client);
+	if (StrEqual(g_t_name, "")) {
+		Format(g_t_name, sizeof(g_t_name), DEFAULT_T_NAME);
+	}
+	if (StrEqual(g_ct_name, "")) {
+		Format(g_ct_name, sizeof(g_ct_name), DEFAULT_CT_NAME);
+	}
 	if (t_score > ct_score) {
 		Format(result, maxlen, "\x02%t \x04%d\x03-\x04%d", "T Winning", g_t_name, t_score, ct_score);
 	} else if (t_score == ct_score) {
@@ -2749,7 +2797,12 @@ public Action ReadyInfoPriv(int client, int args)
 public Action Event_Round_Start(Handle event, const char[]name, bool dontBroadcast)
 {
 	Event_Round_Start_CMD();
-	Round_Start_Player_Names();
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsClientInGame(i) && GetClientTeam(i) > 1) {
+			FreezeTimeSpawn(i);
+		}
+	}
+//	Round_Start_Player_Names();
 }
 
 public void Event_Round_Start_CMD()
@@ -3051,6 +3104,17 @@ stock void GetCurrentWorkshopMap(char[] g_MapName, int iMapBuf, char[] g_WorkSho
 	strcopy(g_map, iMapBuf, g_CurMapSplit[1]);
 }
 
+public Action LogPlayerStatsTimer (Handle timer, int winner) {
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsClientInGame(i) && GetClientTeam(i) == winner) {
+			clutch_stats[i][CLUTCH_WON] = 1;
+		}
+		if (g_live) {
+			LogPlayerStats(i);
+		}
+	}
+}
+
 public Action Event_Round_End(Handle event, const char[]name, bool dontBroadcast)
 {
 	if (!IsActive(0, true))
@@ -3063,14 +3127,17 @@ public Action Event_Round_End(Handle event, const char[]name, bool dontBroadcast
 	// stats
 	if (GetConVarBool(wm_stats_enabled))
 	{
-		for (int i = 1; i <= MaxClients; i++)
+		CreateTimer(4.0, LogPlayerStatsTimer, winner);
+		/*for (int i = 1; i <= MaxClients; i++)
 		{
 			if (IsClientInGame(i) && GetClientTeam(i) == winner)
 			{
 				clutch_stats[i][CLUTCH_WON] = 1;
 			}
-			LogPlayerStats(i, GetEventInt(event, "reason"));
-		}
+			if (g_live) {
+				LogPlayerStats(i);
+			}
+		}*/
 		if (g_t_knife)
 		{
 			LogEvent("{\"event\": \"knife_round_end\", \"round\": %i, \"winner\": %d, \"reason\": %d}", g_round, winner, GetEventInt(event, "reason"));
@@ -3126,7 +3193,19 @@ public Action Event_Round_End(Handle event, const char[]name, bool dontBroadcast
 		AddScore(winner);
 		CheckScores();
 		UpdateStatus();
-		
+		Call_StartForward(g_f_on_round_end);
+		Call_PushString(g_ct_name);
+		Call_PushCell(GetCTTotalScore());
+		Call_PushCell(GetTTotalScore());
+		Call_PushString(g_t_name);
+		Call_Finish();
+		if (wm_damageprint_enabled.IntValue == 1) {
+			for (int i = 1; i <= MaxClients; i++) {
+				if (IsValidClient(i)) {
+					PrintDamageInfo(i);
+				}
+			}
+		}
 	}
 }
 
@@ -3225,7 +3304,7 @@ public Action Event_Player_Hurt(Handle event, const char[]name, bool dontBroadca
 				weapon = "m4a1_silencer";
 			}
 		}
-		else if (StrEqual(weapon, "hkp2000") || StrEqual(weapon, "p250") || StrEqual(weapon, "fiveseven") || StrEqual(weapon, "tec9"))
+		else if (StrEqual(weapon, "hkp2000") || StrEqual(weapon, "p250") || StrEqual(weapon, "fiveseven") || StrEqual(weapon, "tec9") || StrEqual(weapon, "deagle"))
 		{
 			int iWeapon = GetPlayerWeaponSlot(attacker, CS_SLOT_SECONDARY);
 			int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
@@ -3237,6 +3316,25 @@ public Action Event_Player_Hurt(Handle event, const char[]name, bool dontBroadca
 			{
 				weapon = "cz75a";
 			}
+			else if (pWeapon == 64)
+			{
+				weapon = "revolver";
+			}
+		} else if (StrEqual(weapon, "knife_t") || StrEqual(weapon, "knife_default_ct") || StrEqual(weapon, "knife_flip") || StrEqual(weapon, "knife_gut") || StrEqual(weapon, "knife_karambit") || StrEqual(weapon, "knife_m9_bayonet") || StrEqual(weapon, "knife_tactical") || StrEqual(weapon, "knife_falchion") || StrEqual(weapon, "knife_butterfly") || StrEqual(weapon, "knife_push") || StrEqual(weapon, "bayonet") || StrEqual(weapon, "knifegg")) {
+			int iWeapon = GetPlayerWeaponSlot(attacker, CS_SLOT_KNIFE);
+			int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
+			if (pWeapon == 500 || pWeapon == 505 || pWeapon == 506 || pWeapon == 507 || pWeapon == 508 || pWeapon == 509 || pWeapon == 512 || pWeapon == 515 || pWeapon == 516 || pWeapon == 59 || pWeapon == 42)
+			{
+				weapon = "knife";
+			}
+		}
+		
+		if (StrEqual(weapon, "m4a1_silencer_off")) {
+			weapon = "m4a1_silencer";
+		} else if (StrEqual(weapon, "usp_silencer_off")) {
+			weapon = "usp_silencer";
+		} else if (StrEqual(weapon, "knife_t") || StrEqual(weapon, "knife_default_ct") || StrEqual(weapon, "knife_flip") || StrEqual(weapon, "knife_gut") || StrEqual(weapon, "knife_karambit") || StrEqual(weapon, "knife_m9_bayonet") || StrEqual(weapon, "knife_tactical") || StrEqual(weapon, "knife_falchion") || StrEqual(weapon, "knife_butterfly") || StrEqual(weapon, "knife_push") || StrEqual(weapon, "bayonet") || StrEqual(weapon, "knifegg")) {
+			weapon = "knife";
 		}
 		
 		if (attacker > 0)
@@ -3259,6 +3357,8 @@ public Action Event_Player_Hurt(Handle event, const char[]name, bool dontBroadca
 				{
 					LogEvent("{\"event\": \"player_hurt\", \"round\": %i, \"attacker\": %s, \"victim\": %s, \"weapon\": \"%s\", \"damage\": %d, \"damageArmor\": %d, \"hitGroup\": %d}", g_round, attacker_log_string, victim_log_string, weapon, damage, damage_armor, hitgroup);
 				}
+				g_DamageDone[attacker][victim] += damage;
+				g_DamageDoneHits[attacker][victim]++;
 			}
 			if (weapon_index > -1)
 			{
@@ -3301,14 +3401,48 @@ public Action Event_Player_Death(Handle event, const char[]name, bool dontBroadc
 	bool headshot = GetEventBool(event, "headshot");
 	char  weapon[64];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
-	if (StrEqual(weapon, "m4a1_silencer_off"))
+	if (StrEqual(weapon, "m4a1"))
 	{
+		int iWeapon = GetPlayerWeaponSlot(attacker, CS_SLOT_PRIMARY);
+		int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
+		if (pWeapon == 60)
+		{
+			weapon = "m4a1_silencer";
+		}
+	}
+	else if (StrEqual(weapon, "hkp2000") || StrEqual(weapon, "p250") || StrEqual(weapon, "fiveseven") || StrEqual(weapon, "tec9") || StrEqual(weapon, "deagle"))
+	{
+		int iWeapon = GetPlayerWeaponSlot(attacker, CS_SLOT_SECONDARY);
+		int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
+		if (pWeapon == 61)
+		{
+			weapon = "usp_silencer";
+		}
+		else if (pWeapon == 63)
+		{
+			weapon = "cz75a";
+		}
+		else if (pWeapon == 64)
+		{
+			weapon = "revolver";
+		}
+	} else if (StrEqual(weapon, "knife_t") || StrEqual(weapon, "knife_default_ct") || StrEqual(weapon, "knife_flip") || StrEqual(weapon, "knife_gut") || StrEqual(weapon, "knife_karambit") || StrEqual(weapon, "knife_m9_bayonet") || StrEqual(weapon, "knife_tactical") || StrEqual(weapon, "knife_falchion") || StrEqual(weapon, "knife_butterfly") || StrEqual(weapon, "knife_push") || StrEqual(weapon, "bayonet") || StrEqual(weapon, "knifegg")) {
+		int iWeapon = GetPlayerWeaponSlot(attacker, CS_SLOT_KNIFE);
+		int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
+		if (pWeapon == 500 || pWeapon == 505 || pWeapon == 506 || pWeapon == 507 || pWeapon == 508 || pWeapon == 509 || pWeapon == 512 || pWeapon == 515 || pWeapon == 516 || pWeapon == 59 || pWeapon == 42)
+		{
+			weapon = "knife";
+		}
+	}
+	
+	if (StrEqual(weapon, "m4a1_silencer_off")) {
 		weapon = "m4a1_silencer";
-	}
-	else if (StrEqual(weapon, "usp_silencer_off"))
-	{
+	} else if (StrEqual(weapon, "usp_silencer_off")) {
 		weapon = "usp_silencer";
+	} else if (StrEqual(weapon, "knife_t") || StrEqual(weapon, "knife_default_ct") || StrEqual(weapon, "knife_flip") || StrEqual(weapon, "knife_gut") || StrEqual(weapon, "knife_karambit") || StrEqual(weapon, "knife_m9_bayonet") || StrEqual(weapon, "knife_tactical") || StrEqual(weapon, "knife_falchion") || StrEqual(weapon, "knife_butterfly") || StrEqual(weapon, "knife_push") || StrEqual(weapon, "bayonet") || StrEqual(weapon, "knifegg")) {
+		weapon = "knife";
 	}
+		
 	int victim_team = GetClientTeam(victim);
 	
 	// stats
@@ -3344,11 +3478,11 @@ public Action Event_Player_Death(Handle event, const char[]name, bool dontBroadc
 			EscapeString(weapon, sizeof(weapon));
 			if (g_t_knife)
 			{
-			LogEvent("{\"event\": \"knife_player_suicide\", \"round\": %i, \"player\": %s, \"assister\": %s, \"weapon\": \"%s\"}", g_round, log_string, assister_log_string, weapon);
+				LogEvent("{\"event\": \"knife_player_suicide\", \"round\": %i, \"player\": %s, \"assister\": %s, \"weapon\": \"%s\"}", g_round, log_string, assister_log_string, weapon);
 			}
 			else
 			{
-			LogEvent("{\"event\": \"player_suicide\", \"round\": %i, \"player\": %s, \"assister\": %s, \"weapon\": \"%s\"}", g_round, log_string, assister_log_string, weapon);
+				LogEvent("{\"event\": \"player_suicide\", \"round\": %i, \"player\": %s, \"assister\": %s, \"weapon\": \"%s\"}", g_round, log_string, assister_log_string, weapon);
 			}
 		}
 		if (victim > 0)
@@ -3360,14 +3494,14 @@ public Action Event_Player_Death(Handle event, const char[]name, bool dontBroadc
 				int attacker_team = GetClientTeam(attacker);
 				if (weapon_index > -1)
 				{
-					weapon_stats[attacker][weapon_index][LOG_HIT_KILLS]++;
 					if (headshot == true)
 					{
 						weapon_stats[attacker][weapon_index][LOG_HIT_HEADSHOTS]++;
 					}
-					if (attacker_team == victim_team)
-					{
+					if (attacker_team == victim_team) {
 						weapon_stats[attacker][weapon_index][LOG_HIT_TEAMKILLS]++;
+					} else {
+						weapon_stats[attacker][weapon_index][LOG_HIT_KILLS]++;
 					}
 				}
 				int victim_num_alive = GetNumAlive(victim_team);
@@ -3392,6 +3526,7 @@ public Action Event_Player_Death(Handle event, const char[]name, bool dontBroadc
 						clutch_stats[attacker][CLUTCH_LAST] = 1;
 					}
 				}
+				g_GotKill[attacker][victim] = true;
 			}
 			
 			int victim_weapon_index = GetWeaponIndex(last_weapon[victim]);
@@ -3493,7 +3628,11 @@ public Action Event_Player_Disc_Pre(Handle event, const char[]name, bool dontBro
 
 public Action Event_Player_Team_Post (Handle event, const char[]name, bool dontBroadcast) {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	int team = GetEventInt(event, "team");
+	FreezeTimeSpawn(client);
+}
+
+public void FreezeTimeSpawn(int client) {
+	int team = GetClientTeam(client);
 	
 	if (g_live && GameRules_GetProp("m_bFreezePeriod") == 1 && !IsPlayerAlive(client) && (team == CS_TEAM_CT || team == CS_TEAM_T)) {
 		CS_RespawnPlayer(client);
@@ -3779,7 +3918,7 @@ public Action Event_Weapon_Fire(Handle event, const char[]name, bool dontBroadca
 					weapon = "m4a1_silencer";
 				}
 			}
-			else if (StrEqual(weapon, "hkp2000") || StrEqual(weapon, "p250") || StrEqual(weapon, "fiveseven") || StrEqual(weapon, "tec9"))
+			else if (StrEqual(weapon, "hkp2000") || StrEqual(weapon, "p250") || StrEqual(weapon, "fiveseven") || StrEqual(weapon, "tec9") || StrEqual(weapon, "deagle"))
 			{
 				int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
 				int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
@@ -3791,7 +3930,27 @@ public Action Event_Weapon_Fire(Handle event, const char[]name, bool dontBroadca
 				{
 					weapon = "cz75a";
 				}
+				else if (pWeapon == 64)
+				{
+					weapon = "revolver";
+				}
+			} else if (StrEqual(weapon, "knife_t") || StrEqual(weapon, "knife_default_ct") || StrEqual(weapon, "knife_flip") || StrEqual(weapon, "knife_gut") || StrEqual(weapon, "knife_karambit") || StrEqual(weapon, "knife_m9_bayonet") || StrEqual(weapon, "knife_tactical") || StrEqual(weapon, "knife_falchion") || StrEqual(weapon, "knife_butterfly") || StrEqual(weapon, "knife_push") || StrEqual(weapon, "bayonet") || StrEqual(weapon, "knifegg")) {
+				int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
+				int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
+				if (pWeapon == 500 || pWeapon == 505 || pWeapon == 506 || pWeapon == 507 || pWeapon == 508 || pWeapon == 509 || pWeapon == 512 || pWeapon == 515 || pWeapon == 516 || pWeapon == 59 || pWeapon == 42)
+				{
+					weapon = "knife";
+				}
 			}
+			
+			if (StrEqual(weapon, "m4a1_silencer_off")) {
+				weapon = "m4a1_silencer";
+			} else if (StrEqual(weapon, "usp_silencer_off")) {
+				weapon = "usp_silencer";
+			} else if (StrEqual(weapon, "knife_t") || StrEqual(weapon, "knife_default_ct") || StrEqual(weapon, "knife_flip") || StrEqual(weapon, "knife_gut") || StrEqual(weapon, "knife_karambit") || StrEqual(weapon, "knife_m9_bayonet") || StrEqual(weapon, "knife_tactical") || StrEqual(weapon, "knife_falchion") || StrEqual(weapon, "knife_butterfly") || StrEqual(weapon, "knife_push") || StrEqual(weapon, "bayonet") || StrEqual(weapon, "knifegg")) {
+				weapon = "knife";
+			}
+			
 			int weapon_index = GetWeaponIndex(weapon);
 			if (weapon_index > -1)
 			{
@@ -3986,13 +4145,25 @@ void CheckScores()
 			{
 				return;
 			}
+			
 			Call_StartForward(g_f_on_half_time);
+			Call_PushString(g_ct_name);
+			Call_PushCell(GetCTTotalScore());
+			Call_PushCell(GetTTotalScore());
+			Call_PushString(g_t_name);
 			Call_Finish();
+			
 			if (GetConVarBool(wm_stats_enabled))
 			{
 				LogEvent("{\"event\": \"half_time\", \"teams\": [{\"name\": \"%s\", \"team\": %d, \"score\": %d}, {\"name\": \"%s\", \"team\": %d, \"score\": %d}]}", g_t_name_escaped, CS_TEAM_T, GetTTotalScore(), g_ct_name_escaped, CS_TEAM_CT, GetCTTotalScore());
 			}
 			DisplayScore(0, 0, false);
+			
+			if (team_switch) {
+				team_switch = false;
+			} else {
+				team_switch = true;
+			}
 			
 			g_t_money = false;
 			g_first_half = false;
@@ -4075,7 +4246,7 @@ void CheckScores()
 				}
 				if (GetConVarBool(wm_prefix_logs))
 				{
-					RenameLogs();
+					CreateTimer(5.0, RenameLogs);
 				}
 				DisplayScore(0, 0, false);
 				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
@@ -4131,7 +4302,7 @@ void CheckScores()
 			}
 			if (GetConVarBool(wm_prefix_logs))
 			{
-				RenameLogs();
+				CreateTimer(5.0, RenameLogs);
 			}
 			DisplayScore(0, 0, false);
 			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
@@ -4191,7 +4362,7 @@ void CheckScores()
 				}
 				if (GetConVarBool(wm_prefix_logs))
 				{
-					RenameLogs();
+					CreateTimer(5.0, RenameLogs);
 				}
 				
 /*				if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
@@ -4250,11 +4421,22 @@ void CheckScores()
 			{
 				return;
 			}
+			
 			Call_StartForward(g_f_on_half_time);
+			Call_PushString(g_ct_name);
+			Call_PushCell(GetCTTotalScore());
+			Call_PushCell(GetTTotalScore());
+			Call_PushString(g_t_name);
 			Call_Finish();
+			
 			if (GetConVarBool(wm_stats_enabled))
 			{
 				LogEvent("{\"event\": \"over_half_time\", \"teams\": [{\"name\": \"%s\", \"team\": %d, \"score\": %d}, {\"name\": \"%s\", \"team\": %d, \"score\": %d}]}", g_t_name_escaped, CS_TEAM_T, GetTTotalScore(), g_ct_name_escaped, CS_TEAM_CT, GetCTTotalScore());
+			}
+			if (team_switch) {
+				team_switch = false;
+			} else {
+				team_switch = true;
 			}
 			DisplayScore(0, 1, false);
 			
@@ -4333,7 +4515,7 @@ void CheckScores()
 			}
 			if (GetConVarBool(wm_prefix_logs))
 			{
-				RenameLogs();
+				CreateTimer(5.0, RenameLogs);
 			}
 			DisplayScore(0, 2, false);
 			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
@@ -4598,7 +4780,7 @@ void CheckReady()
 	ReplaceString(t_name, sizeof(t_name), ".", "");
 	ReplaceString(ct_name, sizeof(ct_name), ".", "");
 	
-	if (((GetConVarBool(wm_require_names) || GetConVarBool(wm_require_logos)) && GetTeamClientCount(CS_TEAM_CT) >= (GetConVarInt(wm_min_ready)/2) && GetTeamClientCount(CS_TEAM_T) >= (GetConVarInt(wm_min_ready)/2) && (StrEqual(g_t_name, DEFAULT_T_NAME, false) || StrEqual(g_ct_name, DEFAULT_CT_NAME, false))))
+	if (((GetConVarBool(wm_require_names) || GetConVarBool(wm_require_logos)) && GetTeamClientCount(CS_TEAM_CT) >= (GetConVarInt(wm_min_ready)/2) && GetTeamClientCount(CS_TEAM_T) >= (GetConVarInt(wm_min_ready)/2) && ((StrEqual(t_name, DEFAULT_T_NAME, false) || StrEqual(t_name, "", false) || StrEqual(t_name, "_", false)) || (StrEqual(ct_name, DEFAULT_CT_NAME, false) || StrEqual(ct_name, "CounterTerrorists", false) || StrEqual(ct_name, "", false) || StrEqual(ct_name, "_", false)))))
 	{
 		if (!GetConVarBool(wm_warmod_safemode) && !GetConVarBool(wm_require_logos))
 		{
@@ -4885,7 +5067,7 @@ void ReadyChecked()
 				getTerroristTeamName();
 			}
 			
-			if (StrEqual(ct_name, DEFAULT_CT_NAME, false) || StrEqual(ct_name, "", false) || StrEqual(ct_name, "_", false))
+			if (StrEqual(ct_name, DEFAULT_CT_NAME, false) || StrEqual(ct_name, "CounterTerrorists", false) || StrEqual(ct_name, "", false) || StrEqual(ct_name, "_", false))
 			{
 				getCounterTerroristTeamName();
 			}
@@ -4902,6 +5084,12 @@ void ReadyChecked()
 			ReplaceString(ct_name, sizeof(ct_name), ".", "");
 			StringToLower(t_name, sizeof(t_name));
 			StringToLower(ct_name, sizeof(ct_name));
+			if (StrEqual(t_name, "rrorists", false)) {
+			Format(t_name, sizeof(t_name), "terroists");
+			}	
+			if (StrEqual(ct_name, "unterterrorists", false)) {
+				Format(ct_name, sizeof(ct_name), "counterterroists");
+			}
 			Format(g_log_filename, sizeof(g_log_filename), "%s-%s%s-%04x-%s-%s-vs-%s", date, startHour, startMin, GetConVarInt(FindConVar("hostport")), g_map, t_name, ct_name);
 		}
 		else
@@ -4920,7 +5108,7 @@ void ReadyChecked()
 		{
 			if (!DirExists(save_dir))
 			{
-				CreateDirectory(save_dir, 751);
+				CreateDirectory(save_dir, 511);
 			}
 		}		
 		if (GetConVarBool(wm_auto_record))
@@ -5046,7 +5234,7 @@ stock bool LiveOn3Override()
 		return true;
 	}
 	
-	SQL_Player_Info();
+//	SQL_Player_Info();
 	if (hDatabase == INVALID_HANDLE) {
 		StartSQL(2);
 	} else {
@@ -5070,6 +5258,7 @@ stock bool LiveOn3Override()
 		return true;
 	}
 	
+	team_switch = false;
 	if (!InWarmup())
 	{
 		ServerCommand("mp_unpause_match 1");
@@ -5254,9 +5443,13 @@ public Action Command_JoinTeam(int client, const char[]command, int args)
 		return Plugin_Stop;
 	}
 	
+	//char m_szTeam[8];
+	//GetCmdArg(1, m_szTeam, sizeof(m_szTeam));
+	//int m_iTeam = StringToInt(m_szTeam);
+	
 	int max_players = GetConVarInt(wm_max_players);
-	if ((g_ready_enabled || g_match || g_t_knife || g_max_lock) && max_players != 0 && GetClientTeam(client) <= 1 && CS_GetPlayingCount() >= max_players)
-	{
+	if ((g_ready_enabled || g_match || g_t_knife || g_max_lock) && max_players != 0 && GetClientTeam(client) <= 1 && CS_GetPlayingCount() >= max_players) {
+	//((GetTeamClientCount(CS_TEAM_T) > (max_players/2) && m_iTeam == CS_TEAM_T) || (GetTeamClientCount(CS_TEAM_CT) > (max_players/2) && m_iTeam == CS_TEAM_CT))) {
 		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Maximum Players");
 		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 		return Plugin_Stop;
@@ -5295,9 +5488,13 @@ public Action ChooseTeam(int client, int args)
 		return Plugin_Stop;
 	}
 	
+	//char m_szTeam[8];
+	//GetCmdArg(1, m_szTeam, sizeof(m_szTeam));
+	//int m_iTeam = StringToInt(m_szTeam);
+	
 	int max_players = GetConVarInt(wm_max_players);
-	if ((g_ready_enabled || g_match || g_t_knife || g_max_lock) && max_players != 0 && GetClientTeam(client) <= 1 && CS_GetPlayingCount() >= max_players)
-	{
+	if ((g_ready_enabled || g_match || g_t_knife || g_max_lock) && max_players != 0 && GetClientTeam(client) <= 1 && CS_GetPlayingCount() >= max_players) {
+	//((GetTeamClientCount(CS_TEAM_T) > (max_players/2) && m_iTeam == CS_TEAM_T) || (GetTeamClientCount(CS_TEAM_CT) > (max_players/2) && m_iTeam == CS_TEAM_CT))) {
 		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Maximum Players");
 		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 		return Plugin_Stop;
@@ -5617,22 +5814,26 @@ void ShowInfo(int client, bool enable, bool priv, int time)
 	
 	if (!enable)
 	{
-		g_m_ready_up = CreatePanel();
-		char panel_title[128];
-		Format(panel_title, sizeof(panel_title), "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled", client);
-		SetPanelTitle(g_m_ready_up, panel_title);
-		
-		for (int i = 1; i <= MaxClients; i++)
-		{
-			if (IsClientInGame(i) && !IsFakeClient(i))
+		if (GetConVarBool(wm_ready_panel)) {
+			g_m_ready_up = CreatePanel();
+			char panel_title[128];
+			Format(panel_title, sizeof(panel_title), "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled", client);
+			SetPanelTitle(g_m_ready_up, panel_title);
+			
+			for (int i = 1; i <= MaxClients; i++)
 			{
-				SendPanelToClient(g_m_ready_up, i, Handler_DoNothing, time);
+				if (IsClientInGame(i) && !IsFakeClient(i))
+				{
+					SendPanelToClient(g_m_ready_up, i, Handler_DoNothing, time);
+				}
 			}
+			
+			CloseHandle(g_m_ready_up);
+			
+			UpdateStatus();
+		} else {
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled");
 		}
-		
-		CloseHandle(g_m_ready_up);
-		
-		UpdateStatus();
 		
 		return;
 	}
@@ -5646,7 +5847,11 @@ void ShowInfo(int client, bool enable, bool priv, int time)
 		if (g_player_list[i] == PLAYER_UNREADY && IsClientInGame(i) && !IsFakeClient(i))
 		{
 			GetClientName(i, player_name, sizeof(player_name));
-			Format(player_temp, sizeof(player_temp), "  %s\n", player_name);
+			if (GetConVarBool(wm_ready_panel)) {
+				Format(player_temp, sizeof(player_temp), "  %s\n", player_name);
+			} else {
+				Format(player_temp, sizeof(player_temp), "  %s,", player_name);
+			}
 			StrCat(players_unready, sizeof(players_unready), player_temp);
 			SetTagNotReady(i);
 		}
@@ -5662,7 +5867,13 @@ void ShowInfo(int client, bool enable, bool priv, int time)
 		{
 			if (IsClientInGame(i) && !IsFakeClient(i) && !g_cancel_list[i])
 			{
-				DispInfo(i, players_unready, time);
+				if (GetConVarBool(wm_ready_panel)) {
+					DispInfo(i, players_unready, time);
+				} else if (!(GetConVarBool(wm_ready_panel)) && g_DispInfoLimiter) {
+					g_DispInfoLimiter = false;
+					DispInfo(i, players_unready, time);
+					CreateTimer(30.0, DispInfoLimiterTrue);
+				}
 			}
 		}
 	}
@@ -5671,23 +5882,29 @@ void ShowInfo(int client, bool enable, bool priv, int time)
 
 void DispInfo(int client, char[] players_unready, int time)
 {
-	char Temp[128];
-	SetGlobalTransTarget(client);
-	g_m_ready_up = CreatePanel();
-	Format(Temp, sizeof(Temp), "WarMod [BFG]- %t", "Ready System");
-	SetPanelTitle(g_m_ready_up, Temp);
-	DrawPanelText(g_m_ready_up, "\n \n");
-	Format(Temp, sizeof(Temp), "%t", "Match Begin Msg", GetConVarInt(wm_min_ready));
-	DrawPanelItem(g_m_ready_up, Temp);
-	DrawPanelText(g_m_ready_up, "\n \n");	
-	Format(Temp, sizeof(Temp), "%t", "Info Not Ready");
-	DrawPanelItem(g_m_ready_up, Temp);
-	DrawPanelText(g_m_ready_up, players_unready);
-	DrawPanelText(g_m_ready_up, " \n");
-	Format(Temp, sizeof(Temp), "%t", "Info Exit");
-	DrawPanelItem(g_m_ready_up, Temp);
-	SendPanelToClient(g_m_ready_up, client, Handler_ReadySystem, time);
-	CloseHandle(g_m_ready_up);
+	if (GetConVarBool(wm_ready_panel)) {
+		char Temp[128];
+		SetGlobalTransTarget(client);
+		g_m_ready_up = CreatePanel();
+		Format(Temp, sizeof(Temp), "WarMod [BFG]- %t", "Ready System");
+		SetPanelTitle(g_m_ready_up, Temp);
+		DrawPanelText(g_m_ready_up, "\n \n");
+		Format(Temp, sizeof(Temp), "%t", "Match Begin Msg", GetConVarInt(wm_min_ready));
+		DrawPanelItem(g_m_ready_up, Temp);
+		DrawPanelText(g_m_ready_up, "\n \n");	
+		Format(Temp, sizeof(Temp), "%t", "Info Not Ready");
+		DrawPanelItem(g_m_ready_up, Temp);
+		DrawPanelText(g_m_ready_up, players_unready);
+		DrawPanelText(g_m_ready_up, " \n");
+		Format(Temp, sizeof(Temp), "%t", "Info Exit");
+		DrawPanelItem(g_m_ready_up, Temp);
+		SendPanelToClient(g_m_ready_up, client, Handler_ReadySystem, time);
+		CloseHandle(g_m_ready_up);
+	} else if (!g_live) {
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x04 %t", CHAT_PREFIX, "Ready System");
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x04 %t", CHAT_PREFIX, "Match Begin Msg", GetConVarInt(wm_min_ready));
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x02 %t\x01%s", CHAT_PREFIX, "Info Not Ready", players_unready);
+	}
 }
 
 void ReadyChangeAll(int client, bool up, bool silent)
@@ -5994,6 +6211,54 @@ public Action Switch(int client, int args)
 		g_teamNumber_t = g_teamNumber_ct;
 		g_teamNumber_ct = temp;
 		g_tag_set = false;
+		
+		char teamflag1[4];
+		char teamlogo1[8];
+		char teamname1[64];
+		char teamflag2[4];
+		char teamlogo2[8];
+		char teamname2[64];
+		
+		GetConVarString(mp_teamname_1, teamname1, sizeof(teamname1));
+		GetConVarString(mp_teamlogo_1, teamlogo1, sizeof(teamlogo1));
+		GetConVarString(mp_teamflag_1, teamflag1, sizeof(teamflag1));
+		GetConVarString(mp_teamname_2, teamname2, sizeof(teamname2));
+		GetConVarString(mp_teamlogo_2, teamlogo2, sizeof(teamlogo2));
+		GetConVarString(mp_teamflag_2, teamflag2, sizeof(teamflag2));
+		
+		if (GetConVarBool(wm_name_fix)) {
+			if (!StrEqual(teamname1, DEFAULT_T_NAME, false) && !StrEqual(teamname1, DEFAULT_CT_NAME, false)) {
+				ServerCommand("mp_teamname_2 %s", teamname1);
+			} else {
+				ServerCommand("mp_teamname_2 \"\"");
+			}
+			if (!StrEqual(teamflag1, "", false)) {
+				ServerCommand("mp_teamflag_2 %s", teamflag1);
+			} else {
+				ServerCommand("mp_teamflag_2 \"\"");
+			}
+			if (!StrEqual(teamlogo1, "", false)) {
+				ServerCommand("mp_teamlogo_2 %s", teamlogo1);
+			} else {
+				ServerCommand("mp_teamlogo_2 \"\"");
+			}
+			
+			if (!StrEqual(teamname2, DEFAULT_T_NAME, false) && !StrEqual(teamname2, DEFAULT_CT_NAME, false)) {
+				ServerCommand("mp_teamname_1 %s", teamname2);
+			} else {
+				ServerCommand("mp_teamname_1 \"\"");
+			}	
+			if (!StrEqual(teamflag2, "", false)) {
+				ServerCommand("mp_teamflag_1 %s", teamflag2);
+			} else {
+				ServerCommand("mp_teamflag_1 \"\"");
+			}
+			if (!StrEqual(teamlogo2, "", false)) {
+				ServerCommand("mp_teamlogo_1 %s", teamlogo2);
+			} else {
+				ServerCommand("mp_teamlogo_1 \"\"");
+			}
+		}
 		
 		if (GetConVarBool(wm_knife_auto_start))
 		{
@@ -6578,6 +6843,12 @@ public Action Swap(Handle timer)
 	}
 }
 
+public Action DispInfoLimiterTrue(Handle timer)
+{
+	g_DispInfoLimiter = true;
+	ShowInfo(0, true, false, 0);
+}
+
 public Action setNameLimiterTrue(Handle timer)
 {
 	g_setNameLimiter = true;
@@ -6907,7 +7178,7 @@ public Action Stats_Trace(Handle timer)
 						weapon = "m4a1_silencer";
 					}
 				}
-				else if (StrEqual(weapon, "hkp2000") || StrEqual(weapon, "p250") || StrEqual(weapon, "fiveseven") || StrEqual(weapon, "tec9"))
+				else if (StrEqual(weapon, "hkp2000") || StrEqual(weapon, "p250") || StrEqual(weapon, "fiveseven") || StrEqual(weapon, "tec9") || StrEqual(weapon, "deagle"))
 				{
 					int iWeapon = GetPlayerWeaponSlot(i, CS_SLOT_SECONDARY);
 					int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
@@ -6919,8 +7190,27 @@ public Action Stats_Trace(Handle timer)
 					{
 						weapon = "cz75a";
 					}
+					else if (pWeapon == 64)
+					{
+						weapon = "revolver";
+					}
+				} else if (StrEqual(weapon, "knife_t") || StrEqual(weapon, "knife_default_ct") || StrEqual(weapon, "knife_flip") || StrEqual(weapon, "knife_gut") || StrEqual(weapon, "knife_karambit") || StrEqual(weapon, "knife_m9_bayonet") || StrEqual(weapon, "knife_tactical") || StrEqual(weapon, "knife_falchion") || StrEqual(weapon, "knife_butterfly") || StrEqual(weapon, "knife_push") || StrEqual(weapon, "bayonet") || StrEqual(weapon, "knifegg")) {
+					int iWeapon = GetPlayerWeaponSlot(i, CS_SLOT_KNIFE);
+					int pWeapon = GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex");
+					if (pWeapon == 500 || pWeapon == 505 || pWeapon == 506 || pWeapon == 507 || pWeapon == 508 || pWeapon == 509 || pWeapon == 512 || pWeapon == 515 || pWeapon == 516 || pWeapon == 59 || pWeapon == 42)
+					{
+						weapon = "knife";
+					}
 				}
 				
+				if (StrEqual(weapon, "m4a1_silencer_off")) {
+					weapon = "m4a1_silencer";
+				} else if (StrEqual(weapon, "usp_silencer_off")) {
+					weapon = "usp_silencer";
+				} else if (StrEqual(weapon, "knife_t") || StrEqual(weapon, "knife_default_ct") || StrEqual(weapon, "knife_flip") || StrEqual(weapon, "knife_gut") || StrEqual(weapon, "knife_karambit") || StrEqual(weapon, "knife_m9_bayonet") || StrEqual(weapon, "knife_tactical") || StrEqual(weapon, "knife_falchion") || StrEqual(weapon, "knife_butterfly") || StrEqual(weapon, "knife_push") || StrEqual(weapon, "bayonet") || StrEqual(weapon, "knifegg")) {
+					weapon = "knife";
+				}
+					
 				if (g_t_knife)
 				{
 					LogEvent("{\"event\": \"knife_player_trace\", \"round\": %i, \"player\": %s, \"weapon\": \"%s\"}", g_round, log_string, weapon);
@@ -6934,7 +7224,7 @@ public Action Stats_Trace(Handle timer)
 	}
 }
 
-void RenameLogs()
+public Action RenameLogs(Handle timer)
 {
 	char save_dir[128];
 	GetConVarString(wm_save_dir, save_dir, sizeof(save_dir));
@@ -7015,10 +7305,16 @@ void ResetClutchStats()
 		clutch_stats[i][CLUTCH_FRAGS] = 0;
 		clutch_stats[i][CLUTCH_WON] = 0;
 		round_health[i] = 100;
+		
+		for (int j = 1; j <= MaxClients; j++) {
+            g_DamageDone[i][j] = 0;
+            g_DamageDoneHits[i][j] = 0;
+            g_GotKill[i][j] = false;
+        }
 	}
 }
 
-void LogPlayerStats(int client, int round_reason)
+void LogPlayerStats(int client)
 {
 	if (IsClientInGame(client) && GetClientTeam(client) > 1)
 	{
@@ -7077,22 +7373,72 @@ void LogPlayerStats(int client, int round_reason)
 		
 		if (GetConVarBool(wm_upload_results) && match_id != 0) {
 			char query[1024];
+			char insertquery[1024];
 			char table_name[128];
+			StripFilename(player_name, sizeof(player_name));
 			if (StrEqual("", authid, false)) {
-				Format(authid, sizeof(authid), "BOT");
+				Format(authid, sizeof(authid), "BOT_%s", player_name);
 			}
+			if (team_switch) {
+				if (team == 2) {
+					team = 1;
+				} else if (team == 3) {
+					team = 2;
+				}
+			} else {
+				if (team == 2) {
+					team = 2;
+				} else if (team == 3) {
+					team = 1;
+				}
+			}
+			int k1;	int k2;	int k3;	int k4; int k5;
+			if (round_stats[LOG_HIT_KILLS] == 1) {
+				k1 = 1;
+			} else if (round_stats[LOG_HIT_KILLS] == 2) {
+				k2 = 1;
+			} else if (round_stats[LOG_HIT_KILLS] == 3) {
+				k3 = 1;
+			} else if (round_stats[LOG_HIT_KILLS] == 4) {
+				k4 = 1;
+			} else if (round_stats[LOG_HIT_KILLS] == 5) {
+				k5 = 1;
+			}
+			
 			GetConVarString(wm_table_round_stats, table_name, sizeof(table_name));
-			Format(query, sizeof(query), "INSERT INTO `%s` (`key_id`, `match_id`, `round`, `player_name`, `steam_id_64`, `team`, `kills`, `deaths`, `assists`, `head_shots`, `team_kills`, `assists_team_attack`, `damage`, `hits`, `shots`, `last_alive`, `clutch_won`, `round_win_reason`)  VALUES (NULL, %i, %i, '%s', '%s', %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i);", table_name, match_id, g_round, player_name, authid, team, round_stats[LOG_HIT_KILLS], round_stats[LOG_HIT_DEATHS], assist_stats[client][ASSIST_COUNT], round_stats[LOG_HIT_HEADSHOTS], round_stats[LOG_HIT_TEAMKILLS], assist_stats[client][ASSIST_COUNT_TK], round_stats[LOG_HIT_DAMAGE], round_stats[LOG_HIT_HITS], round_stats[LOG_HIT_SHOTS], clutch_stats[client][CLUTCH_LAST], clutch_won, round_reason);
+			Format(query, sizeof(query), "UPDATE `%s` SET `rounds_played` = `rounds_played` + 1, `player_name` = '%s', `kills` = `kills` + %i, `deaths` = `deaths` + %i, `assists` = `assists` + %i, `head_shots` = `head_shots` + %i, `team_kills` = `team_kills` + %i, `assists_team_attack` = `assists_team_attack` + %i, `damage` = `damage` + %i, `hits` = `hits` + %i, `shots` = `shots` + %i, `last_alive` = `last_alive` + %i, `clutch_won` = `clutch_won` + %i, `1k` = `1k` + %i, `2k` = `2k` + %i, `3k` = `3k` + %i, `4k` = `4k` + %i, `5k` = `5k` + %i WHERE `match_id` = %i AND `steam_id_64` = '%s';", table_name, player_name, round_stats[LOG_HIT_KILLS], round_stats[LOG_HIT_DEATHS], assist_stats[client][ASSIST_COUNT], round_stats[LOG_HIT_HEADSHOTS], round_stats[LOG_HIT_TEAMKILLS], assist_stats[client][ASSIST_COUNT_TK], round_stats[LOG_HIT_DAMAGE], round_stats[LOG_HIT_HITS], round_stats[LOG_HIT_SHOTS], clutch_stats[client][CLUTCH_LAST], clutch_won, k1, k2, k3, k4, k5, match_id, authid);
+			if ((GetTTotalScore() + GetCTTotalScore()) == 1) {
+				Format(insertquery, sizeof(insertquery), "INSERT INTO `%s` (`key_id`, `match_id`, `rounds_played`, `player_name`, `steam_id_64`, `team`, `kills`, `deaths`, `assists`, `head_shots`, `team_kills`, `assists_team_attack`, `damage`, `hits`, `shots`, `last_alive`, `clutch_won`, `1k`, `2k`, `3k`, `4k`, `5k`) VALUES (NULL, %i, 2, '%s', '%s', %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i);", table_name, match_id, player_name, authid, team, round_stats[LOG_HIT_KILLS], round_stats[LOG_HIT_DEATHS], assist_stats[client][ASSIST_COUNT], round_stats[LOG_HIT_HEADSHOTS], round_stats[LOG_HIT_TEAMKILLS], assist_stats[client][ASSIST_COUNT_TK], round_stats[LOG_HIT_DAMAGE], round_stats[LOG_HIT_HITS], round_stats[LOG_HIT_SHOTS], clutch_stats[client][CLUTCH_LAST], clutch_won, k1, k2, k3, k4, k5);
+			} else {
+				Format(insertquery, sizeof(insertquery), "INSERT INTO `%s` (`key_id`, `match_id`, `rounds_played`, `player_name`, `steam_id_64`, `team`, `kills`, `deaths`, `assists`, `head_shots`, `team_kills`, `assists_team_attack`, `damage`, `hits`, `shots`, `last_alive`, `clutch_won`, `1k`, `2k`, `3k`, `4k`, `5k`) VALUES (NULL, %i, 1, '%s', '%s', %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i);", table_name, match_id, player_name, authid, team, round_stats[LOG_HIT_KILLS], round_stats[LOG_HIT_DEATHS], assist_stats[client][ASSIST_COUNT], round_stats[LOG_HIT_HEADSHOTS], round_stats[LOG_HIT_TEAMKILLS], assist_stats[client][ASSIST_COUNT_TK], round_stats[LOG_HIT_DAMAGE], round_stats[LOG_HIT_HITS], round_stats[LOG_HIT_SHOTS], clutch_stats[client][CLUTCH_LAST], clutch_won, k1, k2, k3, k4, k5);
+			}
+			Handle hPack = CreateDataPack();
+			WritePackString(hPack, insertquery);
 			if (SQL_DEBUG) {
 				LogError(query);
 			}
-			SQL_TQuery(hDatabase, MySQL_UploadRoundStatsReturn, query);
+			SQL_TQuery(hDatabase, MySQL_UploadRoundStatsReturn, query, hPack);
 		}
 		ResetPlayerStats(client);
 	}
 }
 
 public void MySQL_UploadRoundStatsReturn(Handle owner, Handle hndl, const char[] error, any data) {
+	if (hndl == INVALID_HANDLE) {
+		LogError("Query failed! %s", error);
+	} else if (SQL_GetAffectedRows(hndl) == 0) {
+		char query[1024];
+		ResetPack(data);
+		ReadPackString(data, query, sizeof(query));
+		if (SQL_DEBUG) {
+				LogError(query);
+		}
+		SQL_TQuery(hDatabase, MySQL_UploadRoundStatsInsertReturn, query);
+	}
+	CloseHandle(data);
+}
+
+public void MySQL_UploadRoundStatsInsertReturn(Handle owner, Handle hndl, const char[] error, any data) {
 	if (hndl == INVALID_HANDLE) {
 		LogError("Query failed! %s", error);
 	}
@@ -8016,6 +8362,12 @@ void VetoLogFileCreate()
 		ReplaceString(ct_name, sizeof(ct_name), ".", "");
 		StringToLower(t_name, sizeof(t_name));
 		StringToLower(ct_name, sizeof(ct_name));
+		if (StrEqual(t_name, "rrorists", false)) {
+			Format(t_name, sizeof(t_name), "terroists");
+		}	
+		if (StrEqual(ct_name, "unterterrorists", false)) {
+			Format(ct_name, sizeof(ct_name), "counterterroists");
+		}
 		Format(g_log_veto_filename, sizeof(g_log_veto_filename), "%s-%s%s-%04x-veto_Bo%i-%s-vs-%s", date, startHour, startMin, GetConVarInt(FindConVar("hostport")), num, t_name, ct_name);
 	}
 	else
@@ -8029,7 +8381,7 @@ void VetoLogFileCreate()
 	{
 		if (!DirExists(save_dir))
 		{
-			CreateDirectory(save_dir, 751);
+			CreateDirectory(save_dir, 511);
 		}
 	}		
 	if (GetConVarBool(wm_stats_enabled))
@@ -8661,7 +9013,7 @@ static void CreateDefaultMapFile()
 		Format(folderTest, sizeof(folderTest), "cfg/%s", g_FolderSplit[0]);
 		if (!DirExists(folderTest))
 		{
-			CreateDirectory(folderTest, 751);
+			CreateDirectory(folderTest, 511);
 		}
 	}
 	
@@ -9693,7 +10045,7 @@ void StartSQL(int upload) {
 		if (SQL_CheckConfig("warmod")) {
 			SQL_TConnect(GotDatabase, "warmod", upload);
 		} else {
-			LogError("No WarMod database configuration found (note: case-sensitive)!");
+			LogError("No warmod database configuration found (note: case-sensitive)!");
 		}
 	}
 }
@@ -9711,19 +10063,19 @@ public void GotDatabase(Handle owner, Handle hndl, const char[] error, any data)
 void MySQL_CreateTable(any data) {
 	char query[1024];
 	char table_name[128];
-	GetConVarString(wm_table_name_players, table_name, sizeof(table_name));
+	/*GetConVarString(wm_table_name_players, table_name, sizeof(table_name));
 	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `%s` (`key_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, `match_id` INT(11) UNSIGNED NOT NULL, `steamid64` VARCHAR(64) NOT NULL, `player_name` VARCHAR(64) NOT NULL, `team` TINYINT(2) unsigned NOT NULL, PRIMARY KEY (`key_id`));", table_name);
 	if (SQL_DEBUG) {
 		LogError(query);
 	}
-	SQL_TQuery(hDatabase, MySQL_CreateTablePlayersReturn, query);
+	SQL_TQuery(hDatabase, MySQL_CreateTablePlayersReturn, query);*/
 	
 	GetConVarString(wm_table_round_stats, table_name, sizeof(table_name));
-	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `%s` (`key_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, `match_id` INT(11) unsigned NOT NULL, `round` TINYINT(3) unsigned NOT NULL, `player_name` VARCHAR(64) NOT NULL, `steam_id_64` VARCHAR(20) NOT NULL, `team` TINYINT(1) NOT NULL,  `kills` TINYINT(2) NOT NULL, `deaths` TINYINT(2) NOT NULL, `assists` TINYINT(2) NOT NULL, `head_shots` TINYINT(2) NOT NULL, `team_kills` TINYINT(2) NOT NULL, `assists_team_attack` TINYINT(2) NOT NULL, `damage` INT(4) NOT NULL, `hits` INT(4) NOT NULL, `shots` INT(4) NOT NULL, `last_alive` TINYINT(1) NOT NULL, `clutch_won` TINYINT(1) NOT NULL, `round_win_reason` TINYINT(2) NOT NULL, PRIMARY KEY (`key_id`));", table_name);
+	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `%s` (`key_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, `match_id` INT(11) unsigned NOT NULL, `rounds_played` TINYINT(3) unsigned NOT NULL, `player_name` VARCHAR(64) NOT NULL, `steam_id_64` VARCHAR(20) NOT NULL, `team` TINYINT(1) NOT NULL, `kills` TINYINT(2) NOT NULL, `deaths` TINYINT(2) NOT NULL, `assists` TINYINT(2) NOT NULL, `head_shots` TINYINT(2) NOT NULL, `team_kills` TINYINT(2) NOT NULL, `assists_team_attack` TINYINT(2) NOT NULL, `damage` INT(4) NOT NULL, `hits` INT(4) NOT NULL, `shots` INT(4) NOT NULL, `last_alive` TINYINT(1) NOT NULL, `clutch_won` TINYINT(1) NOT NULL, `1k` TINYINT(2) NOT NULL, `2k` TINYINT(2) NOT NULL, `3k` TINYINT(2) NOT NULL, `4k` TINYINT(2) NOT NULL, `5k` TINYINT(2) NOT NULL, PRIMARY KEY (`key_id`));", table_name);
 	if (SQL_DEBUG) {
 		LogError(query);
 	}
-	SQL_TQuery(hDatabase, MySQL_CreateTablePlayersReturn, query);
+	SQL_TQuery(hDatabase, MySQL_CreateTablePlayerStatsReturn, query);
 	
 	GetConVarString(wm_table_name, table_name, sizeof(table_name));
 	Format(query, sizeof(query), "CREATE TABLE IF NOT EXISTS `%s` (`match_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, `match_start` DATETIME NOT NULL, `match_end` DATETIME NOT NULL, `map` VARCHAR(64) NOT NULL, `max_rounds` TINYINT(3) unsigned NOT NULL, `overtime_max_rounds` TINYINT(3) UNSIGNED NOT NULL, `overtime_count` TINYINT(3) UNSIGNED NOT NULL, `played_out` TINYINT(1) NOT NULL, `t_name` VARCHAR(128) NOT NULL, `t_overall_score` TINYINT(3) UNSIGNED NOT NULL, `t_first_half_score` TINYINT(3) UNSIGNED NOT NULL, `t_second_half_score` TINYINT(3) UNSIGNED NOT NULL, `t_overtime_score` TINYINT(3) UNSIGNED NOT NULL, `ct_name` VARCHAR(128) NOT NULL, `ct_overall_score` TINYINT(3) UNSIGNED NOT NULL, `ct_first_half_score` TINYINT(3) UNSIGNED NOT NULL, `ct_second_half_score` TINYINT(3) UNSIGNED NOT NULL, `ct_overtime_score` TINYINT(3) UNSIGNED NOT NULL, `demo` VARCHAR(128) NOT NULL, PRIMARY KEY (`match_id`));", table_name);
@@ -9733,7 +10085,7 @@ void MySQL_CreateTable(any data) {
 	SQL_TQuery(hDatabase, MySQL_CreateTableReturn, query, data);
 }
 
-public void MySQL_CreateTablePlayersReturn(Handle owner, Handle hndl, const char[] error, any data) {
+public void MySQL_CreateTablePlayerStatsReturn(Handle owner, Handle hndl, const char[] error, any data) {
 	if (hndl == INVALID_HANDLE) {
 		LogError("Query failed! %s", error);
 	}
@@ -9764,13 +10116,21 @@ void MySQL_UploadResultsRound() {
 		g_overtime_rounds = (GetConVarInt(mp_overtime_maxrounds)/2);
 	}
 	if (match_id != 0) {
-		Format(query, sizeof(query), "UPDATE `%s` SET `match_end` = UTC_TIMESTAMP(), `map` = '%s', `max_rounds` = %i, `overtime_max_rounds` = %i, `overtime_count` = %i, `played_out` = %i, `t_name` = '%s', `t_overall_score` = %i, `t_first_half_score` = %i, `t_second_half_score` = %i, `t_overtime_score` = %i, `ct_name` = '%s', `ct_overall_score` = %i, `ct_first_half_score` = %i, `ct_second_half_score` = %i, `ct_overtime_score` = %i, `demo` = '%s' WHERE `match_id` = %i;", table_name, g_map, (GetConVarInt(mp_maxrounds)/2), g_overtime_rounds, g_overtime_count, g_played_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore(), g_log_filename, match_id);
+		if (team_switch) {
+			Format(query, sizeof(query), "UPDATE `%s` SET `match_end` = UTC_TIMESTAMP(), `map` = '%s', `max_rounds` = %i, `overtime_max_rounds` = %i, `overtime_count` = %i, `played_out` = %i, `t_name` = '%s', `t_overall_score` = %i, `t_first_half_score` = %i, `t_second_half_score` = %i, `t_overtime_score` = %i, `ct_name` = '%s', `ct_overall_score` = %i, `ct_first_half_score` = %i, `ct_second_half_score` = %i, `ct_overtime_score` = %i, `demo` = '%s' WHERE `match_id` = %i;", table_name, g_map, (GetConVarInt(mp_maxrounds)/2), g_overtime_rounds, g_overtime_count, g_played_out, g_ct_name_escaped, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore(), g_t_name_escaped, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_log_filename, match_id);
+		} else {
+			Format(query, sizeof(query), "UPDATE `%s` SET `match_end` = UTC_TIMESTAMP(), `map` = '%s', `max_rounds` = %i, `overtime_max_rounds` = %i, `overtime_count` = %i, `played_out` = %i, `t_name` = '%s', `t_overall_score` = %i, `t_first_half_score` = %i, `t_second_half_score` = %i, `t_overtime_score` = %i, `ct_name` = '%s', `ct_overall_score` = %i, `ct_first_half_score` = %i, `ct_second_half_score` = %i, `ct_overtime_score` = %i, `demo` = '%s' WHERE `match_id` = %i;", table_name, g_map, (GetConVarInt(mp_maxrounds)/2), g_overtime_rounds, g_overtime_count, g_played_out, g_t_name_escaped, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name_escaped, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore(), g_log_filename, match_id);
+		}
 		if (SQL_DEBUG) {
 			LogError(query);
 		}
 		SQL_TQuery(hDatabase, MySQL_UploadResultsRoundReturn, query, false);
 	} else {
-		Format(query, sizeof(query), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`, `demo`) VALUES (NULL, UTC_TIMESTAMP(), UTC_TIMESTAMP(), '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s')", table_name, g_map, (GetConVarInt(mp_maxrounds)/2), g_overtime_rounds, g_overtime_count, g_played_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore(), g_log_filename);
+		if (team_switch) {
+			Format(query, sizeof(query), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`, `demo`) VALUES (NULL, UTC_TIMESTAMP(), UTC_TIMESTAMP(), '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s')", table_name, g_map, (GetConVarInt(mp_maxrounds)/2), g_overtime_rounds, g_overtime_count, g_played_out, g_ct_name_escaped, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore(), g_t_name_escaped, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_log_filename);
+		} else {
+			Format(query, sizeof(query), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`, `demo`) VALUES (NULL, UTC_TIMESTAMP(), UTC_TIMESTAMP(), '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s')", table_name, g_map, (GetConVarInt(mp_maxrounds)/2), g_overtime_rounds, g_overtime_count, g_played_out, g_t_name_escaped, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name_escaped, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore(), g_log_filename);
+		}
 		if (SQL_DEBUG) {
 			LogError(query);
 		}
@@ -9791,13 +10151,21 @@ void MySQL_UploadResults() {
 	char table_name[128];
 	GetConVarString(wm_table_name, table_name, sizeof(table_name));
 	if (match_id != 0) {
-		Format(query, sizeof(query), "UPDATE `%s` SET `match_start` = DATE_SUB(UTC_TIMESTAMP(), INTERVAL %i SECOND), `match_end` = UTC_TIMESTAMP(), `map` = '%s', `max_rounds` = %i, `overtime_max_rounds` = %i, `overtime_count` = %i, `played_out` = %i, `t_name` = '%s', `t_overall_score` = %i, `t_first_half_score` = %i, `t_second_half_score` = %i, `t_overtime_score` = %i, `ct_name` = '%s', `ct_overall_score` = %i, `ct_first_half_score` = %i, `ct_second_half_score` = %i, `ct_overtime_score` = %i, `demo` = '%s' WHERE `match_id` = %i;", table_name, lt_match_length, lt_map, lt_max_rounds, lt_overtime_max_rounds, lt_overtime_count, lt_played_out, lt_t_name, lt_t_overall_score, lt_t_first_half_score, lt_t_second_half_score, lt_t_overtime_score, lt_ct_name, lt_ct_overall_score, lt_ct_first_half_score, lt_ct_second_half_score, lt_ct_overtime_score, lt_log_file_name, match_id);
+		if (team_switch) {
+			Format(query, sizeof(query), "UPDATE `%s` SET `match_start` = DATE_SUB(UTC_TIMESTAMP(), INTERVAL %i SECOND), `match_end` = UTC_TIMESTAMP(), `map` = '%s', `max_rounds` = %i, `overtime_max_rounds` = %i, `overtime_count` = %i, `played_out` = %i, `t_name` = '%s', `t_overall_score` = %i, `t_first_half_score` = %i, `t_second_half_score` = %i, `t_overtime_score` = %i, `ct_name` = '%s', `ct_overall_score` = %i, `ct_first_half_score` = %i, `ct_second_half_score` = %i, `ct_overtime_score` = %i, `demo` = '%s' WHERE `match_id` = %i;", table_name, lt_match_length, lt_map, lt_max_rounds, lt_overtime_max_rounds, lt_overtime_count, lt_played_out, lt_ct_name, lt_ct_overall_score, lt_ct_first_half_score, lt_ct_second_half_score, lt_ct_overtime_score, lt_t_name, lt_t_overall_score, lt_t_first_half_score, lt_t_second_half_score, lt_t_overtime_score, lt_log_file_name, match_id);
+		} else {
+			Format(query, sizeof(query), "UPDATE `%s` SET `match_start` = DATE_SUB(UTC_TIMESTAMP(), INTERVAL %i SECOND), `match_end` = UTC_TIMESTAMP(), `map` = '%s', `max_rounds` = %i, `overtime_max_rounds` = %i, `overtime_count` = %i, `played_out` = %i, `t_name` = '%s', `t_overall_score` = %i, `t_first_half_score` = %i, `t_second_half_score` = %i, `t_overtime_score` = %i, `ct_name` = '%s', `ct_overall_score` = %i, `ct_first_half_score` = %i, `ct_second_half_score` = %i, `ct_overtime_score` = %i, `demo` = '%s' WHERE `match_id` = %i;", table_name, lt_match_length, lt_map, lt_max_rounds, lt_overtime_max_rounds, lt_overtime_count, lt_played_out, lt_t_name, lt_t_overall_score, lt_t_first_half_score, lt_t_second_half_score, lt_t_overtime_score, lt_ct_name, lt_ct_overall_score, lt_ct_first_half_score, lt_ct_second_half_score, lt_ct_overtime_score, lt_log_file_name, match_id);
+		}
 		if (SQL_DEBUG) {
 			LogError(query);
 		}
 		SQL_TQuery(hDatabase, MySQL_UploadResultsReturn, query, false);
 	} else {
-		Format(query, sizeof(query), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`, `demo`) VALUES (NULL, DATE_SUB(UTC_TIMESTAMP(), INTERVAL %i SECOND), UTC_TIMESTAMP(), '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s')", table_name, lt_match_length, lt_map, lt_max_rounds, lt_overtime_max_rounds, lt_overtime_count, lt_played_out, lt_t_name, lt_t_overall_score, lt_t_first_half_score, lt_t_second_half_score, lt_t_overtime_score, lt_ct_name, lt_ct_overall_score, lt_ct_first_half_score, lt_ct_second_half_score, lt_ct_overtime_score, lt_log_file_name);
+		if (team_switch) {
+			Format(query, sizeof(query), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`, `demo`) VALUES (NULL, DATE_SUB(UTC_TIMESTAMP(), INTERVAL %i SECOND), UTC_TIMESTAMP(), '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s')", table_name, lt_match_length, lt_map, lt_max_rounds, lt_overtime_max_rounds, lt_overtime_count, lt_played_out, lt_ct_name, lt_ct_overall_score, lt_ct_first_half_score, lt_ct_second_half_score, lt_ct_overtime_score, lt_t_name, lt_t_overall_score, lt_t_first_half_score, lt_t_second_half_score, lt_t_overtime_score, lt_log_file_name);
+		} else {
+			Format(query, sizeof(query), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`, `demo`) VALUES (NULL, DATE_SUB(UTC_TIMESTAMP(), INTERVAL %i SECOND), UTC_TIMESTAMP(), '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s', %i, %i, %i, %i, '%s')", table_name, lt_match_length, lt_map, lt_max_rounds, lt_overtime_max_rounds, lt_overtime_count, lt_played_out, lt_t_name, lt_t_overall_score, lt_t_first_half_score, lt_t_second_half_score, lt_t_overtime_score, lt_ct_name, lt_ct_overall_score, lt_ct_first_half_score, lt_ct_second_half_score, lt_ct_overtime_score, lt_log_file_name);
+		}
 		if (SQL_DEBUG) {
 			LogError(query);
 		}
@@ -9815,7 +10183,7 @@ public void MySQL_UploadResultsReturn(Handle owner, Handle hndl, const char[] er
 			match_id = SQL_GetInsertId(hDatabase);
 		}
 		
-		char query[1024];
+		/*char query[1024];
 		char table_name[128];
 		GetConVarString(wm_table_name_players, table_name, sizeof(table_name));
 		for (int i = 0; i <= sql_player_count; i++) {
@@ -9826,15 +10194,15 @@ public void MySQL_UploadResultsReturn(Handle owner, Handle hndl, const char[] er
 				}
 				SQL_TQuery(hDatabase, MySQL_UploadPlayersReturn, query);
 			}
-		}
+		}*/
 	}
 }
-
+/*
 public void MySQL_UploadPlayersReturn(Handle owner, Handle hndl, const char[] error, any data) {
 	if (hndl == INVALID_HANDLE) {
 		LogError("Query failed! %s", error);
 	}
-}
+}*/
 
 void MySQL_CreateResultKey() {
 	char query[1024];
@@ -9848,7 +10216,7 @@ void MySQL_CreateResultKey() {
 	if (GetConVarBool(mp_overtime_enable)) {
 		g_overtime_rounds = (GetConVarInt(mp_overtime_maxrounds)/2);
 	}
-	Format(query, sizeof(query), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`, `demo`) VALUES (NULL, UTC_TIMESTAMP(), UTC_TIMESTAMP(), '%s', %i, %i, 0, %i, '%s', 0, 0, 0, 0, '%s', 0, 0, 0, 0, '%s')", table_name, g_map, (GetConVarInt(mp_maxrounds)/2), g_overtime_rounds, g_played_out, g_t_name, g_ct_name, g_log_filename);
+	Format(query, sizeof(query), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`, `demo`) VALUES (NULL, UTC_TIMESTAMP(), UTC_TIMESTAMP(), '%s', %i, %i, 0, %i, '%s', 0, 0, 0, 0, '%s', 0, 0, 0, 0, '%s')", table_name, g_map, (GetConVarInt(mp_maxrounds)/2), g_overtime_rounds, g_played_out, g_t_name_escaped, g_ct_name_escaped, g_log_filename);
 	if (SQL_DEBUG) {
 		LogError(query);
 	}
@@ -9862,7 +10230,7 @@ public void MySQL_CreateResultKeyReturn(Handle owner, Handle hndl, const char[] 
 	match_id = SQL_GetInsertId(hDatabase);
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 MySQL Match_ID = %i", CHAT_PREFIX, match_id);
 }
-
+/*
 void SQL_Player_Info () {
 	char authid[32];
 	for (int i = 1; i <= MaxClients; i++) {
@@ -9919,4 +10287,101 @@ void Round_Start_Player_Names () {
 			} 
 		}
 	}
+}*/
+
+/* Print Damage Info */
+/* From splewis CS:GO PugSetup: damage printer*/
+static void PrintDamageInfo(int client) {
+	if (!IsValidClient(client))
+		return;
+	
+	int team = GetClientTeam(client);
+	if (team != CS_TEAM_T && team != CS_TEAM_CT)
+		return;
+	
+	char message[256];
+	
+	int otherTeam = (team == CS_TEAM_T) ? CS_TEAM_CT : CS_TEAM_T;
+	PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 Damage Report:", CHAT_PREFIX);
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsValidClient(i) && GetClientTeam(i) == otherTeam) {
+			if (g_DamageDone[client][i] > 0 || g_DamageDone[i][client] > 0) {
+				int health = IsPlayerAlive(i) ? GetClientHealth(i) : 0;
+				char name[64];
+				GetClientName(i, name, sizeof(name));
+				
+				wm_damageprint_format.GetString(message, sizeof(message));
+				
+				if (wm_damageprint_auto_color.IntValue == 0) {
+					ReplaceStringWithInt(message, sizeof(message), "{DMG_TO}", g_DamageDone[client][i]);
+					ReplaceStringWithInt(message, sizeof(message), "{HITS_TO}", g_DamageDoneHits[client][i]);
+					ReplaceStringWithInt(message, sizeof(message), "{DMG_FROM}", g_DamageDone[i][client]);
+					ReplaceStringWithInt(message, sizeof(message), "{HITS_FROM}", g_DamageDoneHits[i][client]);
+					ReplaceString(message, sizeof(message), "{NAME}", name);
+					ReplaceStringWithInt(message, sizeof(message), "{HEALTH}", health);
+					Colorize(message, sizeof(message));
+				} else {
+					// Strip colors first.
+					Colorize(message, sizeof(message), true);
+					char color[16];
+					
+					GetDamageColor(color, true, g_DamageDone[client][i], g_GotKill[client][i]);
+					ReplaceStringWithColoredInt(message, sizeof(message), "{DMG_TO}", g_DamageDone[client][i], color);
+					ReplaceStringWithColoredInt(message, sizeof(message), "{HITS_TO}", g_DamageDoneHits[client][i], color);
+					
+					GetDamageColor(color, false, g_DamageDone[i][client], g_GotKill[i][client]);
+					ReplaceStringWithColoredInt(message, sizeof(message), "{DMG_FROM}", g_DamageDone[i][client], color);
+					ReplaceStringWithColoredInt(message, sizeof(message), "{HITS_FROM}", g_DamageDoneHits[i][client], color);
+					
+					ReplaceString(message, sizeof(message), "{NAME}", name);
+					ReplaceStringWithInt(message, sizeof(message), "{HEALTH}", health);
+					Colorize(message, sizeof(message));
+				}
+				
+				PrintToChat(client, message);
+			}
+		}
+	}
+}
+
+stock void ReplaceStringWithInt(char[] buffer, int len, const char[] replace, int value, bool caseSensitive=false) {
+	char intString[16];
+	IntToString(value, intString, sizeof(intString));
+	ReplaceString(buffer, len, replace, intString, caseSensitive);
+}
+
+stock void ReplaceStringWithColoredInt(char[] buffer, int len, const char[] replace, int value, const char[] color, bool caseSensitive=false) {
+	char intString[48];
+	Format(intString, sizeof(intString), "{%s}%d{NORMAL}", color, value);
+	ReplaceString(buffer, len, replace, intString, caseSensitive);
+}
+
+static char _colorNames[][] = {"{NORMAL}", "{DARK_RED}", "{PINK}", "{GREEN}", "{YELLOW}", "{LIGHT_GREEN}", "{LIGHT_RED}", "{GRAY}", "{ORANGE}", "{LIGHT_BLUE}", "{DARK_BLUE}", "{PURPLE}"};
+static char _colorCodes[][] = {"\x01",     "\x02",      "\x03",   "\x04",         "\x05",     "\x06",          "\x07",        "\x08",   "\x09",     "\x0B",         "\x0C",        "\x0E"};
+
+stock void Colorize(char[] msg, int size, bool stripColor=false) {
+    for (int i = 0; i < sizeof(_colorNames); i ++) {
+        if (stripColor)
+            ReplaceString(msg, size, _colorNames[i], "\x01"); // replace with white
+        else
+            ReplaceString(msg, size, _colorNames[i], _colorCodes[i]);
+    }
+}
+
+static void GetDamageColor(char color[16], bool damageGiven, int damage, bool gotKill) {
+    if (damage == 0) {
+        Format(color, sizeof(color), "NORMAL");
+    } else if (damageGiven) {
+        if (gotKill) {
+            Format(color, sizeof(color), "GREEN");
+        } else {
+            Format(color, sizeof(color), "LIGHT_GREEN");
+        }
+    } else {
+        if (gotKill) {
+            Format(color, sizeof(color), "DARK_RED");
+        } else {
+            Format(color, sizeof(color), "LIGHT_RED");
+        }
+    }
 }

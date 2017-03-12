@@ -93,6 +93,14 @@ forward void LiveWireLogEvent(const char[] event);
  */
 forward void OnLiveOn3();
 
+/**
+ *  called when a match reaches half time
+ *  includes when in overtime
+ * 
+ * @noreturn
+ */
+forward void OnRoundEnd(const char[] ct_name, int ct_score, int t_score, const char[] t_name);
+
 
 /**
  *  called when a match reaches half time
@@ -100,7 +108,7 @@ forward void OnLiveOn3();
  * 
  * @noreturn
  */
-forward void OnHalfTime();
+forward void OnHalfTime(const char[] ct_name, int ct_score, int t_score, const char[] t_name);
 
 
 /**
@@ -576,6 +584,18 @@ stock void EscapeString(char[] value, int size)
 	ReplaceString(value, size, "\n", "\\n");
 	ReplaceString(value, size, "\f", "\\f");
 	ReplaceString(value, size, "\r", "\\r");
+	ReplaceString(value, size, "\\", "");
+	ReplaceString(value, size, "/", "");
+	ReplaceString(value, size, "#", "");
+	ReplaceString(value, size, "*", "");
+	ReplaceString(value, size, "?", "");
+	ReplaceString(value, size, "<", "");
+	ReplaceString(value, size, ">", "");
+	ReplaceString(value, size, "|", "");
+	ReplaceString(value, size, "'", "");
+	ReplaceString(value, size, ";", "");
+	ReplaceString(value, size, "`", "");
+	ReplaceString(value, size, "~", "");
 }
 
 

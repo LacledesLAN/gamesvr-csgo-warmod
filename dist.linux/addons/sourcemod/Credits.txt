@@ -1,0 +1,15 @@
+Main credits go to DJ Tsunami for his original plugin at http://forums.alliedmods.net/showthread.php?t=155705
+Credits also go to:
+GoD-Tony for the Updater plugin.
+Asherkin for the SteamTools extension
+Exvel and Popoklopsi for the Colors Library
+Dr. McKay for the "More Colors" Library
+Berni and Chanz for SMLIB
+The Sourcemod dev team
+KyleS
+FlaminSarge
+Asherkin
+Psychonic
+Swatty
+11530 for all his help
+Everyone else in IRC

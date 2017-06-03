@@ -1,0 +1,13 @@
+// This file will not function if your server is not a TF2 server
+// TF2 is the only mod (as of now) that has support for extra custom colors
+"Extra Chat Colors"
+{
+	"palepink" //The name of the color without the "{" and "}" tags.
+	{
+		"hex"		"0xcc9999" // "Hexadecimal representation of the color" - Directly taken off of the morecolors documentation
+	}
+	"greenishyellow"
+	{
+		"hex"		"0x999966"
+	}
+}

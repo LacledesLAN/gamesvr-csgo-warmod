@@ -1,0 +1,19 @@
+// Extra Top Say Colors
+"Extra Top Say Colors"
+{
+	"palepink" // The color name
+	{
+		// The RGBA value
+		"red"		"248" // Red value
+		"green"		"195" // Green value
+		"blue"		"195" // Blue value
+		"alpha"		"255" // Alpha value, you'll probably want to keep this at 255
+	}
+	"greenishyellow"
+	{
+		"red"		"193"
+		"green"		"253"
+		"blue"		"64"
+		"alpha"		"255"
+	}
+}

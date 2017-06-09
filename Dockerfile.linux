@@ -8,16 +8,15 @@ ENV IMAGE="gamesvr-srcds-csgo-tourney:linux"
 
 HEALTHCHECK NONE
 
-USER root
+# UPDATE USERNAME
+RUN usermod -l CSGOTourney CSGO
+
+USER CSGOTourney
 
 COPY ./dist /app/bin/
 
 COPY ./dist.linux /app/bin/csgo/
 
-# CLEAN UP
-RUN usermod -l CSGOTourney CSGO
-
-#USER CSGOTourney
-User root
-
 WORKDIR /app/bin/
+
+ENTRYPOINT ["/bin/sh"]

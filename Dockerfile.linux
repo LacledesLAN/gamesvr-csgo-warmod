@@ -18,5 +18,3 @@ COPY ./dist /app/bin/
 COPY ./dist.linux /app/bin/csgo/
 
 WORKDIR /app/bin/
-
-ENTRYPOINT ["/bin/sh"]

@@ -195,6 +195,11 @@
 				"de_tulip"		""
 				"de_vertigo"	""
 				"de_zoo"		""
+				"de_austria		""
+				"de_blackgold"	""
+				"de_lite"	""
+				"de_shipped"	""
+				"de_thrill"	""           
 			}
 		}
 				"ll_hostage"									// mapgroup definition
@@ -215,6 +220,8 @@
 				"cs_rush"		""
 				"cs_thunder"	""
 				"cs_workout"	""
+				"cs_agency"	""
+				"cs_insertion"	""
 			}
 		}
 				"ll_orange"									// mapgroup definition

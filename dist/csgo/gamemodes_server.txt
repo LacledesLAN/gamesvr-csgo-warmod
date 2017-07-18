@@ -1,3 +1,4 @@
+//http://www.configcreator.com/create/csgo/gamemodes_server.txt/g4NmVkMj/2
 "Gamemodes_Server.txt"
 {
 	"gameTypes"
@@ -26,9 +27,34 @@
 				}
 			}
 		}
+		"gungame"
+		{
+			"gameModes"
+			{
+				"armsrace"
+				{
+					"mapgroupsMP"
+					{
+						"ll_arms" ""
+					}
+				}
+			}
+		}
 	}
 	"mapgroups"
 	{
+		"ll_arms"
+		{
+			"name" "ll_arms"
+			"maps"
+			{
+				"ar_baggage" ""
+				"ar_monastery" ""
+				"ar_shoots" ""
+				"de_lake" ""
+				"de_stmarc" ""
+			}
+		}
 		"ll_bomb"
 		{
 			"name" "ll_bomb"

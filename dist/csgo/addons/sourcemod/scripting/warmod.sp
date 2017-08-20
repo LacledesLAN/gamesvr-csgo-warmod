@@ -261,6 +261,8 @@ int g_ct_pause_count = 0;
 Handle g_h_stored_timer = INVALID_HANDLE;
 Handle g_h_stored_timer_p = INVALID_HANDLE;
 
+char g_c_backup[128];
+
 /* Veto Settings */
 ConVar wm_pugsetup_maplist_file;
 ConVar wm_pugsetup_randomize_maps;
@@ -330,7 +332,7 @@ Handle g_h_menu = INVALID_HANDLE;
 
 /* Plugin info */
 #define UPDATE_URL				"https://warmod.bitbucket.io/updatefile.txt"
-#define WM_VERSION				"17.01.22.1317"
+#define WM_VERSION				"17.08.12.1053"
 #define WM_DESCRIPTION			"An automative service for CS:GO competition matches"
 
 public Plugin myinfo = {
@@ -383,8 +385,8 @@ public void OnPluginStart()
 	g_f_livewire_log_event = CreateGlobalForward("LiveWireLogEvent", ET_Ignore, Param_String);
 	
 	AddCommandListener(Command_JoinTeam, "jointeam");
-	AddCommandListener(MatchRestore, "mp_backup_restore_load_file");
 	AddCommandListener(UnpauseMatch, "mp_unpause_match");
+	AddCommandListener(MatchRestore, "mp_backup_restore_load_file");
 	
 	RegConsoleCmd("score", ConsoleScore);
 	RegConsoleCmd("wm_version", WMVersion);
@@ -2398,6 +2400,16 @@ public Action ForceStart(int client, int args)
 		SetAllCancelled(false);
 		ReadySystem(false);
 		KnifeOn3(0, 0);
+		LogAction(client, -1, "\"force_start\" (player \"%L\")", client);
+		return Plugin_Handled;
+	}
+
+	if (g_restore)
+	{
+		ShowInfo(0, false, false, 1);
+		SetAllCancelled(false);
+		ReadySystem(false);
+		LiveOn3(true);
 		LogAction(client, -1, "\"force_start\" (player \"%L\")", client);
 		return Plugin_Handled;
 	}
@@ -5246,8 +5258,13 @@ stock bool LiveOn3Override()
 	{
 		LiveOn3Text = true;
 		Event_Round_Start_CMD();
-		ServerCommand("mp_unpause_match 1");
+		ServerCommand("mp_backup_restore_load_autopause 0");
+		ServerCommand("mp_backup_restore_load_file %s", g_c_backup);
 		g_restore = false;
+		char id_match[16];
+		if(SplitString(g_c_backup, "_", id_match, sizeof(id_match)) != -1) {
+			match_id = StringToInt(id_match);
+		}
 		
 		if (GetConVarBool(wm_stats_enabled))
 		{
@@ -9138,29 +9155,35 @@ public Action MatchRestore(int client, const char[]command, int args)
 	char arg[128];
 	if (GetCmdArg(1, arg, sizeof(arg)) < 1)
 	{
-		return Plugin_Continue;
+		return Plugin_Handled;
 	}
 	
+	if (strcmp(arg, g_c_backup, false) == 0)
+	{
+		Format(g_c_backup, sizeof(g_c_backup), "");
+		return Plugin_Continue;
+	}
+
 	if (!StrEqual(arg[strlen(arg)-4], ".txt"))
 	{
 		ServerCommand("mp_backup_restore_load_file %s.txt", arg);
-		return Plugin_Continue;
+		return Plugin_Handled;
 	}
 	
 	MatchRestoreCMD(arg);
-	return Plugin_Continue;
+	return Plugin_Handled;
 }
 
 public void MatchRestoreCMD(char[] arg)
 {
 	Handle kv = CreateKeyValues("SaveFile");
 	FileToKeyValues(kv, arg);
-	
+	Format(g_c_backup, sizeof(g_c_backup), arg);
+
 	KvJumpToKey(kv, "FirstHalfScore", false);
 	g_scores[SCORE_CT][SCORE_FIRST_HALF] = KvGetNum(kv, "team1", 0);
 	g_scores[SCORE_T][SCORE_FIRST_HALF] = KvGetNum(kv, "team2", 0);
 	
-	PrintToChatAll("First Half scores: CT = %i, T = %i", g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_FIRST_HALF]);
 	KvGoBack(kv);
 	
 	if (!KvJumpToKey(kv, "SecondHalfScore", false))
@@ -9168,8 +9191,10 @@ public void MatchRestoreCMD(char[] arg)
 		g_live = false;
 		g_restore = true;
 		ReadySystem(true);
+		ReadyChangeAll(0, false, true);
 		ShowInfo(0, true, false, 0);
-		PrintToChatAll("Total scores: CT = %i, T = %i", GetTTotalScore(), GetCTTotalScore());
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Restoring match. Scores: CT = %i, T = %i", CHAT_PREFIX, GetCTTotalScore(), GetTTotalScore());
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Restoring match. Please ready up!", CHAT_PREFIX);
 	
 		CloseHandle(kv);
 		return;
@@ -9179,7 +9204,6 @@ public void MatchRestoreCMD(char[] arg)
 	g_scores[SCORE_T][SCORE_SECOND_HALF] = KvGetNum(kv, "team1", 0);
 	g_scores[SCORE_CT][SCORE_SECOND_HALF] = KvGetNum(kv, "team2", 0);
 	
-	PrintToChatAll("Second Half scores: CT = %i, T = %i", g_scores[SCORE_CT][SCORE_SECOND_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF]);
 	KvGoBack(kv);
 	
 	if (!KvJumpToKey(kv, "OvertimeScore", false))
@@ -9188,8 +9212,10 @@ public void MatchRestoreCMD(char[] arg)
 		g_live = false;
 		g_restore = true;
 		ReadySystem(true);
+		ReadyChangeAll(0, false, true);
 		ShowInfo(0, true, false, 0);
-		PrintToChatAll("Total scores: CT = %i, T = %i", GetTTotalScore(), GetCTTotalScore());
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Restoring match. Scores: CT = %i, T = %i", CHAT_PREFIX, GetCTTotalScore(), GetTTotalScore());
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Restoring match. Please ready up!", CHAT_PREFIX);
 	
 		CloseHandle(kv);
 		return;
@@ -9222,7 +9248,8 @@ public void MatchRestoreCMD(char[] arg)
 		g_first_half = false;
 	}
 	
-	PrintToChatAll("Total scores: CT = %i, T = %i", GetTTotalScore(), GetCTTotalScore());
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Restoring match. Scores: CT = %i, T = %i", CHAT_PREFIX, GetCTTotalScore(), GetTTotalScore());
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Restoring match. Please ready up!", CHAT_PREFIX);
 	
 	CloseHandle(kv);
 	
@@ -9230,6 +9257,7 @@ public void MatchRestoreCMD(char[] arg)
 	g_overtime = true;
 	g_restore = true;
 	ReadySystem(true);
+	ReadyChangeAll(0, false, true);
 	ShowInfo(0, true, false, 0);
 }
 
@@ -10143,6 +10171,10 @@ public void MySQL_UploadResultsRoundReturn(Handle owner, Handle hndl, const char
 		LogError("Query failed! %s", error);
 	} else if (data) {
 		match_id = SQL_GetInsertId(hDatabase);
+		char g_def_backup[128];
+		GetConVarString(FindConVar("mp_backup_round_file_pattern"), g_def_backup, sizeof(g_def_backup));
+		Format(g_def_backup, sizeof(g_def_backup), "%i_%s", match_id, g_def_backup);
+		ServerCommand("mp_backup_round_file_pattern %s", g_def_backup);
 	}
 }
 
@@ -10181,6 +10213,10 @@ public void MySQL_UploadResultsReturn(Handle owner, Handle hndl, const char[] er
 		
 		if (data) {
 			match_id = SQL_GetInsertId(hDatabase);
+			char g_def_backup[128];
+			GetConVarString(FindConVar("mp_backup_round_file_pattern"), g_def_backup, sizeof(g_def_backup));
+			Format(g_def_backup, sizeof(g_def_backup), "%i_%s", match_id, g_def_backup);
+			ServerCommand("mp_backup_round_file_pattern %s", g_def_backup);
 		}
 		
 		/*char query[1024];
@@ -10228,6 +10264,10 @@ public void MySQL_CreateResultKeyReturn(Handle owner, Handle hndl, const char[] 
 		LogError("Query failed! %s", error);
 	}
 	match_id = SQL_GetInsertId(hDatabase);
+	char g_def_backup[128];
+	GetConVarString(FindConVar("mp_backup_round_file_pattern"), g_def_backup, sizeof(g_def_backup));
+	Format(g_def_backup, sizeof(g_def_backup), "%i_%s", match_id, g_def_backup);
+	ServerCommand("mp_backup_round_file_pattern %s", g_def_backup);
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 MySQL Match_ID = %i", CHAT_PREFIX, match_id);
 }
 /*

@@ -13,8 +13,10 @@ RUN usermod -l CSGOTourney CSGO
 
 USER CSGOTourney
 
-COPY ./dist /app/bin/
+COPY ./dist /app/bin/csgo/
 
 COPY ./dist.linux /app/bin/csgo/
+
+USER root
 
 WORKDIR /app/bin/

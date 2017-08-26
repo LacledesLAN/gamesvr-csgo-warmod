@@ -1,0 +1,35 @@
+"Advertisements"
+{
+	"1"
+	{
+		"type"		"C"
+		"text"		"www.domain.com"
+	}
+	"2"
+	{
+		"type"		"CH"
+		"text"		"contact@domain.com"
+	}
+	"3"
+	{
+		"type"		"M"
+		"text"		"Next map is {NEXTMAP} in {TIMELEFT} minutes."
+		"flags"		"cft"
+	}
+	"4"
+	{
+		"type"		"S"
+		"text"		"{GREEN}Current {LIGHTGREEN}Map: {DEFAULT}{CURRENTMAP}"
+	}
+	"5"
+	{
+		"type"		"T"
+		"text"		"{ORANGE}friendly fire is {CONVAR_BOOL:mp_friendlyfire}."
+	}
+	"6"
+	{
+		"type"		"S"
+		"text"		"{GREEN}Admins: Sourcemod version is {CONVAR:sourcemod_version} and advertisement plugin version is {CONVAR:sm_extended_advertisements_version}"
+		"flags"		"z"
+	}
+}

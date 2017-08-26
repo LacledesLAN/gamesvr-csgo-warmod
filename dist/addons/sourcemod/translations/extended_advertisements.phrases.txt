@@ -1,0 +1,44 @@
+"Phrases"
+{
+	"Advert_Tag"
+	{
+		"en"		"[SM]"
+	}
+	"Config_Reloaded"
+	{
+		"en"		"The advertisement config has been reloaded!"
+	}
+	"Del_Usage"
+	{
+		"en"		"Usage: sm_deladvert <Advert Id>"
+	}
+	"Del_Success"
+	{
+		"#format"	"{1:s}"
+		"en"		"Advert Id \"{1}\" was successfully deleted!"
+	}
+	"Del_Fail"
+	{
+		"#format"	"{1:s}"
+		"en"		"Advert Id \"{1}\" was not found!"
+	}
+	"Add_Usage"
+	{
+		"en"		"Usage: sm_addadvert <Advert Id> <Advert Type> <Advert Text> [Flags] [NoFlags]"
+	}
+	"Add_Success"
+	{
+		"#format"	"{1:s}"
+		"en"		"Advert Id \"{1|\" was successfully added!"
+	}
+	"Add_Fail"
+	{
+		"#format"	"{1:s}"
+		"en"		"An existing advertisement with the id \"{1}\" has been found. Please delete that one first."
+	}
+	"ShowAd_NotFound"
+	{
+		"en"		"The given advertisement was not found."
+	}
+
+}

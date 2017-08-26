@@ -1,0 +1,22 @@
+"Updater"
+{
+	"Information"
+	{
+		"Version"
+		{
+			"Latest"	"1.2.9"
+		}
+		
+		"Notes"		"CS:GO Protobuff Support"
+	}
+	
+	"Files"
+	{
+		"Plugin"	"Path_SM/plugins/adv_adverts_nontf2.smx"
+
+		"Source"	"Path_SM/scripting/adv_adverts.sp"
+		"Source"	"Path_SM/scripting/include/extended_adverts.inc"
+		"Source"	"Path_SM/scripting/include/morecolors_ads.inc"
+		"Source"	"Path_SM/scripting/include/colors_ads.inc"
+	}
+}

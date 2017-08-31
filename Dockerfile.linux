@@ -2,23 +2,31 @@
 
 FROM lacledeslan/gamesvr-csgo
 
-LABEL MAINTAINER="Laclede's LAN <contact@lacledeslan.com>" `
-      org.label-schema.url="https://github.com/LacledesLAN" `
+HEALTHCHECK NONE
+
+ARG BUILDNODE="unspecified"
+ARG SOURCE_COMMIT
+
+LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
+      com.lacledeslan.build-node=$BUILDNODE `
+      org.label-schema.schema-version="1.0" `
+      org.label-schema.url="https://github.com/LacledesLAN/README.1ST" `
+      org.label-schema.vcs-ref=$SOURCE_COMMIT `
       org.label-schema.vendor="Laclede's LAN" `
-      org.label-schema.vcs-ref=$VCS_REF `
-      org.label-schema.name="gamesvr-csgo-tourney" `
       org.label-schema.description="LL Counter-Strike GO Tournament Server" `
       org.label-schema.vcs-url="https://github.com/LacledesLAN/gamesvr-csgo-tourney"
 
-HEALTHCHECK NONE
+COPY ./dist /app/
 
-COPY ./dist /app/csgo/
+COPY ./dist.linux /app/
 
-COPY ./dist.linux /app/csgo/
-
-# UPDATE USERNAME
-RUN usermod -l CSGOTourney CSGO
+# Update username & ensure permissions
+RUN usermod -l CSGOTourney CSGO &&`
+    find /app -type d -exec chmod 775 {} + &&`
+    chmod +x /app/ll-tests/*.sh
 
 USER CSGOTourney
 
 WORKDIR /app/
+
+ONBUILD USER root

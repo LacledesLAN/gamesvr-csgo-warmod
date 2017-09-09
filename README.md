@@ -5,7 +5,7 @@
 [![](https://images.microbadger.com/badges/image/lacledeslan/gamesvr-csgo-tourney.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-tourney "Get your own image badge on microbadger.com")
 
 ```
-docker pull lacledeslan/gamesvr-srcds-csgo-tourney:linux
+docker pull lacledeslan/gamesvr-csgo-tourney
 ```
 
 ## Build Triggers

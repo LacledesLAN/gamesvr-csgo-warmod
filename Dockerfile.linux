@@ -16,9 +16,9 @@ LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
       org.label-schema.description="LL Counter-Strike GO Tournament Server" `
       org.label-schema.vcs-url="https://github.com/LacledesLAN/gamesvr-csgo-tourney"
 
-COPY ./dist /app/
+COPY --chown=CSGO:root /dist /app
 
-COPY ./dist.linux /app/
+COPY --chown=CSGO:root /dist.linux /app/
 
 # Update username & ensure permissions
 RUN usermod -l CSGOTourney CSGO &&`

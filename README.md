@@ -1,17 +1,19 @@
 # Laclede's LAN CS:GO Tournament Server
 
-## Linux Container
+## Linux
+
 [![](https://images.microbadger.com/badges/version/lacledeslan/gamesvr-csgo-tourney.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-tourney "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/lacledeslan/gamesvr-csgo-tourney.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-tourney "Get your own image badge on microbadger.com")
 
+**Download**
 ```
 docker pull lacledeslan/gamesvr-csgo-tourney
 ```
 
-## Build Triggers
-Automated builds of this image can be triggered by the following sources:
-* [Commits on GitHub](https://github.com/LacledesLAN/gamesvr-csgo-tourney)
-* [Upstream build of lacledeslan/gamesvr-csgo](https://hub.docker.com/r/lacledeslan/gamesvr-csgo/)
+**Run self tests**
+```
+docker run -i --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh
+```
 
 ## Tournament Flow
 Game flow is largely controlled by [Warmod [BFG]](https://forums.alliedmods.net/showthread.php?t=225474).
@@ -25,6 +27,17 @@ Another *warm up* mode begins; once all players are ready "live on three" runs a
 Half-time starts after 15 rounds and lasts 30 seconds. Players sides are swapped.
 
 At the end scoreboard shows and server freezes.
+
+## Round Restore
+
+At the start of every round the server writes a file called *LL_round##.txt* which can be used to restore the server to a previous state. After a round is restored the game will be paused; to unpause the server run the command `mp_unpause_match`. After that the players will just need to hit "3" in order to discard the warmod message and they can continue on.
+
+There are a lot of pitfalls so please read warnings careful. It is **highly* recommended you use Snippet-Generator to run round restores.
+
+**Caveat 1: text file names are "zero-indexed". `LL_round00.txt` is for round 1, `LL_round01.txt` is round 2, and so on**
+
+
+**WARNING ABOUT PREVIOUS MATCH RESTORES**
 
 ## Client Checks
 The following checks can be preformed from a connected csgo client to ensure everything is working properly.
@@ -62,3 +75,8 @@ For a full list of Warmod commands [check the official documentation](https://fo
 * `/maxrounds <num>` - Set or display the wm_max_rounds console variable
 * `/aswap` - Manually swaps all players to the opposite team
 * `/t` & `/ct` - Set the Terrorist and Counter-Terrorist team names (note: doesn't change the the cvars *wm_t* or *wm_ct*).
+
+## Build Triggers
+Automated builds of this image can be triggered by the following sources:
+* [Commits on GitHub](https://github.com/LacledesLAN/gamesvr-csgo-tourney)
+* [Upstream build of lacledeslan/gamesvr-csgo](https://hub.docker.com/r/lacledeslan/gamesvr-csgo/)

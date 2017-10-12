@@ -1,5 +1,7 @@
 /.dockerignore eol=lf
+/*.md eol=lf
+/docker-compose*.yml eol=lf
 /Dockerfile.linux eol=lf
 /Dockerfile.windows eol=crlf
 /LICENSE eol=lf
-/README.md eol=lf
+/dist.linux/ll-tests/*.sh eol=lf

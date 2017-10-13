@@ -9,7 +9,7 @@ declare LLTEST_COMMAND="$LLTEST_SCRIPTDIR/../srcds_run -game csgo +game_type 0 +
 # $2 -> description of why we want text to exist
 function should_have() {
     if ! grep -i -q "$1" "$LLTEST_LOGFILE"; then
-        LLTEST_RESULTS+=$'\n FAIL: '"$2";
+        LLTEST_RESULTS+=$'\nFAIL: '"$2";
         LLTEST_HASFAILS=true;
     else
         LLTEST_RESULTS+=$'\nPASS: '"$2";
@@ -82,9 +82,9 @@ echo "$LLTEST_RESULTS";
 echo $'\n';
 
 if [ $LLTEST_HASFAILS = true ]; then
-    echo $"\\nTests has errors!";
+    echo $'\nTests has errors!';
     exit 1;
 fi;
 
-echo "All tests passed";
+echo 'All tests passed';
 exit 0;

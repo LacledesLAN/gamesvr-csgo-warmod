@@ -1,4 +1,11 @@
 #!/bin/bash
+
+echo "BEFORE";
+echo $SHLVL
+sh; #launch subshell
+echo "AFTER";
+echo $SHLVL
+
 declare LLTEST_SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 declare LLTEST_RESULTS="";
 declare LLTEST_HASFAILS=false;

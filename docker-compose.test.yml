@@ -1,0 +1,8 @@
+version: "2"
+
+services: 
+    sut:
+        build:
+            context: .
+            dockerfile: ./Dockerfile.linux
+        command: /app/ll-tests/gamesvr-csgo-tourney.sh

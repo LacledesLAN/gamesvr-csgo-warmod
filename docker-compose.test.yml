@@ -6,5 +6,4 @@ services:
             context: .
             dockerfile: ./Dockerfile.linux
         command: /app/ll-tests/gamesvr-csgo-tourney.sh
-        stdin_open: true
         tty: true

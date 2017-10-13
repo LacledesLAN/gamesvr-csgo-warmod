@@ -3,7 +3,7 @@ declare LLTEST_SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 declare LLTEST_RESULTS="";
 declare LLTEST_HASFAILS=false;
 declare LLTEST_LOGFILE="$LLTEST_SCRIPTDIR/gamesvr-csgo-tourney.log";
-declare LLTEST_COMMAND="$LLTEST_SCRIPTDIR/../srcds_run -game csgo +game_type 0 +game_mode 1 -console -usercon +map de_nuke +sv_lan 1";
+declare LLTEST_COMMAND="$LLTEST_SCRIPTDIR/../srcds_run -game csgo +game_type 0 +game_mode 1 -console -usercon +map de_nuke +sv_lan 1 +ip 0.0.0.0";
 
 # $1 -> text you want to find
 # $2 -> description of why we want text to exist
@@ -12,7 +12,7 @@ function should_have() {
         LLTEST_RESULTS+=$'\n FAIL: '"$2";
         LLTEST_HASFAILS=true;
     else
-        LLTEST_RESULTS+=$'"\nPASS: '"$2";
+        LLTEST_RESULTS+=$'\nPASS: '"$2";
     fi;
 }
 
@@ -24,7 +24,7 @@ function should_lack() {
         LLTEST_RESULTS+=$'\n FAIL: '"$2";
         LLTEST_HASFAILS=true;
     else
-        LLTEST_RESULTS+=$'"\nPASS: '"$2";
+        LLTEST_RESULTS+=$'\nPASS: '"$2";
     fi;
     return 0;
 }
@@ -34,6 +34,7 @@ if [ -f "$LLTEST_SCRIPTDIR/../srcds_run" ]; then
     echo "###################################################################";
     echo $'Attemping to run server for 60 seconds to capture output';
     echo $'Command: '"$LLTEST_COMMAND";
+    echo "Running as "`id`;
     echo "###################################################################";
     $LLTEST_COMMAND > "$LLTEST_LOGFILE" 2>&1 &
     pid=$!

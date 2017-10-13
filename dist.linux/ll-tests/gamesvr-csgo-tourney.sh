@@ -1,16 +1,22 @@
 #!/bin/bash
 
-echo "BEFORE";
-echo $SHLVL
-sh; #launch subshell
-echo "AFTER";
-echo $SHLVL
+if [ -z "$PS1" ]; then
+    echo This shell is not interactive
+else
+    echo This shell is interactive
+fi
+
+printenv;
+
+echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
+echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-";
 
 declare LLTEST_SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 declare LLTEST_RESULTS="";
 declare LLTEST_HASFAILS=false;
 declare LLTEST_LOGFILE="$LLTEST_SCRIPTDIR/gamesvr-csgo-tourney.log";
 declare LLTEST_COMMAND="$LLTEST_SCRIPTDIR/../srcds_run -game csgo +game_type 0 +game_mode 1 -console +map de_nuke";
+
 
 # $1 -> text you want to find
 # $2 -> description of why we want text to exist

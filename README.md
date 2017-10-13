@@ -46,11 +46,11 @@ For a full list of CSGO server commands check [documentation on dathost](http://
 
 > *Note: Preceeding commands with `/` is only needed from remote consoles - do not use at the server terminal*
 
-* `changelevel <levelname>` - Change server to the specified map
-* `mp_pause_match` - Pause the match in the next freeze time
-* `mp_unpause_match` - Resume a paused match
-* `status` - Get a quick overview of the server's current state
-* `sv_password <new password>` - Change the server's password
+* `/changelevel <levelname>` - Change server to the specified map
+* `/mp_pause_match` - Pause the match in the next freeze time
+* `/mp_unpause_match` - Resume a paused match
+* `/status` - Get a quick overview of the server's current state
+* `/sv_password <new password>` - Change the server's password
 
 ## Useful Warmod [BFG] Commands
 For a full list of Warmod commands [check the official documentation](https://forums.alliedmods.net/showthread.php?t=225474).

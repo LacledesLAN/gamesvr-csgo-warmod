@@ -11,9 +11,9 @@ function should_have() {
     if ! grep -i -q "$1" "$LLTEST_LOGFILE"; then
         LLTEST_RESULTS+=$'\n FAIL: '"$2";
         LLTEST_HASFAILS=true;
+    else
+        LLTEST_RESULTS+=$'"\nPASS: '"$2";
     fi;
-    LLTEST_RESULTS+=$'"\nPASS: '"$2";
-    return 0;
 }
 
 
@@ -23,8 +23,9 @@ function should_lack() {
     if grep -i -q "$1" "$LLTEST_LOGFILE"; then
         LLTEST_RESULTS+=$'\n FAIL: '"$2";
         LLTEST_HASFAILS=true;
+    else
+        LLTEST_RESULTS+=$'"\nPASS: '"$2";
     fi;
-    LLTEST_RESULTS+=$'"\nPASS: '"$2";
     return 0;
 }
 

@@ -23,7 +23,11 @@ COPY /dist.linux /app/
 # Update username & ensure permissions
 RUN usermod -l CSGOTourney CSGO &&`
     find /app -type d -exec chmod 775 {} + &&`
-    chmod +x /app/ll-tests/*.sh
+    chmod +x /app/ll-tests/*.sh &&`
+    echo "Permissions hacks until 17.09+ makes it into Docker Cloud" &&`
+        chmod -R 774 /app/csgo/addons &&`
+        chmod -R 774 /app/csgo/cfg &&`
+        chmod -R 774 /app/csgo/logs;
 
 USER CSGOTourney
 

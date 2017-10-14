@@ -4,12 +4,12 @@ declare LLTEST_SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 declare LLTEST_RESULTS="";
 declare LLTEST_HASFAILS=false;
 declare LLTEST_LOGFILE="$LLTEST_SCRIPTDIR/gamesvr-csgo-tourney.log";
-declare LLTEST_COMMAND="bash -l $LLTEST_SCRIPTDIR/../srcds_run -game csgo +game_type 0 +game_mode 1 -console +map de_nuke";
+declare LLTEST_COMMAND=". $LLTEST_SCRIPTDIR/../srcds_run -game csgo +game_type 0 +game_mode 1 -console +map de_nuke";
 
 
 # $1 -> text you want to find
 # $2 -> description of why we want text to exist
-function should_have() {
+function should_have() { 
     if ! grep -i -q "$1" "$LLTEST_LOGFILE"; then
         LLTEST_RESULTS+=$'\nFAIL: '"$2";
         LLTEST_HASFAILS=true;

@@ -1,0 +1,59 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "taskName": "Build & Test",
+            "type": "shell",
+            "command": "docker run --rm test/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh;",
+            "dependsOn": "Build",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "taskName": "Build & Shell In",
+            "type": "shell",
+            "command": "docker run --rm -it test/gamesvr-csgo-tourney;",
+            "dependsOn": "Build",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "taskName": "Build",
+            "type": "shell",
+            "command": "docker build . -f Dockerfile.linux -t test/gamesvr-csgo-tourney --no-cache --build-arg BUILDNODE=localhost;",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "taskName": "Pull & Test",
+            "type": "shell",
+            "command": "docker pull lacledeslan/gamesvr-csgo-tourney; docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh;",
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "taskName": "Pull Parent",
+            "type": "shell",
+            "command": "docker pull lacledeslan/gamesvr-csgo;",
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}

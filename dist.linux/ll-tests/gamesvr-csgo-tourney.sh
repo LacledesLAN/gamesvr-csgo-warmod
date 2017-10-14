@@ -4,7 +4,7 @@ declare LLTEST_SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 declare LLTEST_RESULTS="";
 declare LLTEST_HASFAILS=false;
 declare LLTEST_LOGFILE="$LLTEST_SCRIPTDIR/gamesvr-csgo-tourney.log";
-declare LLTEST_COMMAND=". $LLTEST_SCRIPTDIR/../srcds_run -game csgo +game_type 0 +game_mode 1 -console +map de_nuke";
+declare LLTEST_COMMAND="$LLTEST_SCRIPTDIR/../srcds_run -game csgo +game_type 0 +game_mode 1 -console +map de_nuke";
 
 
 # $1 -> text you want to find
@@ -34,14 +34,14 @@ function should_lack() {
 
 if [ -f "$LLTEST_SCRIPTDIR/../srcds_run" ]; then
     echo "###################################################################";
-    echo $'Attemping to run server for 60 seconds to capture output';
+    echo $'Attemping to run server for 65 seconds to capture output';
     echo $'Command: '"$LLTEST_COMMAND";
     echo "Running as $(id)";
     echo "###################################################################";
     $LLTEST_COMMAND > "$LLTEST_LOGFILE" 2>&1 &
     pid=$!
     #kill pid NOT NEEDED IN DOCKER BUT SHOULD BE FLUSHED OUT; WOULD ALLOW USAGE OUTSIDE CONAINTER CONTEXT
-    sleep 60
+    sleep 65
 else
     echo "srcds_run not found!";
     echo "Test script currently only works inside of the docker container";

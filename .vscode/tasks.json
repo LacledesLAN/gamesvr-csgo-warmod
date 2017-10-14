@@ -4,7 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "Build & Test",
+            "taskName": "Build & Run LL Tests",
             "type": "shell",
             "command": "docker run --rm test/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh;",
             "dependsOn": "Build",
@@ -26,6 +26,17 @@
             }
         },
         {
+            "taskName": "Build & Run Local Server",
+            "type": "shell",
+            "command": "docker run -it --net=host lacledeslan/gamesvr-csgo-tourney ./srcds_run -game csgo +game_type 0 +game_mode 1 -console -usercon +map de_nuke +hostname \"gamesvr-csgo-tourney TEST\" +sv_lan 1 +mp_teamname_1 \"team1\" +mp_teamname_2 \"team2\" +rcon_password \"test123\" +tv_name \"gamesvr-csgo-tourney TV\" +tv_password \"test123\" +tv_relaypassword \"test123\"",
+            "dependsOn": "Build",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
             "taskName": "Build",
             "type": "shell",
             "command": "docker build . -f Dockerfile.linux -t test/gamesvr-csgo-tourney --no-cache --build-arg BUILDNODE=localhost;",
@@ -36,19 +47,9 @@
             }
         },
         {
-            "taskName": "Pull & Test",
+            "taskName": "Pull Remote & Test",
             "type": "shell",
             "command": "docker pull lacledeslan/gamesvr-csgo-tourney; docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh;",
-            "group": "none",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "taskName": "Pull Parent",
-            "type": "shell",
-            "command": "docker pull lacledeslan/gamesvr-csgo;",
             "group": "none",
             "presentation": {
                 "reveal": "always",

@@ -11,7 +11,6 @@ docker pull lacledeslan/gamesvr-csgo-tourney
 ```
 
 **Run self tests**
-> *Work In Progress*
 ```
 docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh
 ```

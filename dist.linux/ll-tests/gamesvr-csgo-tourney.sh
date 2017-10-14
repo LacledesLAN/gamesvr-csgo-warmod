@@ -34,14 +34,14 @@ function should_lack() {
 
 if [ -f "$LLTEST_SCRIPTDIR/../srcds_run" ]; then
     echo "###################################################################";
-    echo $'Attemping to run server for 65 seconds to capture output';
+    echo $'Attemping to run server for 90 seconds to capture output';
     echo $'Command: '"$LLTEST_COMMAND";
     echo "Running as $(id)";
     echo "###################################################################";
     $LLTEST_COMMAND > "$LLTEST_LOGFILE" 2>&1 &
     pid=$!
     #kill pid NOT NEEDED IN DOCKER BUT SHOULD BE FLUSHED OUT; WOULD ALLOW USAGE OUTSIDE CONAINTER CONTEXT
-    sleep 65
+    sleep 90
 else
     echo "srcds_run not found!";
     echo "Test script currently only works inside of the docker container";

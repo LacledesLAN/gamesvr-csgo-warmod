@@ -11,6 +11,7 @@ docker pull lacledeslan/gamesvr-csgo-tourney
 ```
 
 **Run self tests**
+*Work in progress*
 ```
 docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh
 ```
@@ -28,22 +29,11 @@ Half-time starts after 15 rounds and lasts 30 seconds. Players sides are swapped
 
 At the end scoreboard shows and server freezes.
 
-### Round Restore
-
-At the start of every round the server writes a file called *LL_round##.txt* which can be used to restore the server to a previous state. After a round is restored the game will be paused; to unpause the server run the command `mp_unpause_match`. After that the players will just need to hit "3" in order to discard the warmod message and they can continue on.
-
-There are a lot of pitfalls so please read warnings careful. It is **highly* recommended you use Snippet-Generator to run round restores.
-
-**Caveat 1: text file names are "zero-indexed". `LL_round00.txt` is for round 1, `LL_round01.txt` is round 2, and so on**
-
-
-**WARNING ABOUT PREVIOUS MATCH RESTORES**
-
 ## Useful Server Commands
 
 For a full list of CSGO server commands check [documentation on dathost](http://tools.dathost.net/csgo-commands).
 
-> *Note: Preceeding commands with `/` is only needed from remote consoles - do not use at the server terminal*
+> *Note: Only preceed commands with `/` inside the CSGO game client (e.g. rcon) - using the `/` in tools (e.g. HLSW) or in the server's terminal will result in the command failing.*
 
 * `/changelevel <levelname>` - Change server to the specified map
 * `/mp_pause_match` - Pause the match in the next freeze time
@@ -69,6 +59,28 @@ For a full list of Warmod commands [check the official documentation](https://fo
 * `/maxrounds <num>` - Set or display the wm_max_rounds console variable
 * `/aswap` - Manually swaps all players to the opposite team
 * `/t` & `/ct` - Set the Terrorist and Counter-Terrorist team names (note: doesn't change the the cvars *wm_t* or *wm_ct*).
+
+### Round Restore
+
+At the start of every round the server writes a file called *LL_round##.txt* which can be loaded to restore the previous round. After a round is restored the game will be paused; when all players are ready unpause with `mp_unpause_match`. Players will need to hit "3" in order to discard the WarMod message and they can continue on.
+
+There are a lot of pitfalls so please read warnings careful. It is **highly* recommended you use [Snippet-Generator](https://github.com/LacledesLAN/Snippet-Generator) to run round restores.
+
+*Note: file names are "zero-indexed". `LL_round00.txt` is for round 1, `LL_round01.txt` is round 2, and so on.*
+
+After a game resets (for example if a *changelevel* command was issued) the server will start over-write any existing files, starting with LL_round00.txt.
+
+**WARNINGS:**
+* Issuing the wrong round restore command may restore a round from a previous game.
+* There is a bug with WarMod [BFG] where grenades become disabled after issuing a round restore; the command `wm_block_warm_up_grenades 0` must be used to restore.
+* There is a bug with CSGO where the restore command frequently doesn't work and must be typed twice.
+
+To restore round 5 you would issue: 
+```
+mp_backup_restore_load_file LL_round04; mp_backup_restore_load_file LL_round04; wm_block_warm_up_grenades 0;
+```
+Then once all players are ready issue the command `mp_unpause_match;`.
+
 
 ## Troubleshooting
 

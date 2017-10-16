@@ -19,7 +19,7 @@ docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney
 ## Tournament Flow
 Game flow is largely controlled by [Warmod [BFG]](https://forums.alliedmods.net/showthread.php?t=225474).
 
-Server starts in *warm up* mode where players can toggle themselves as `/ready`. Once all ten players are ready *knife mode* begins.
+Server starts in *warm up* mode where players can toggle themselves as `/ready`. Once all ten players are ready *knife mode* begins. The purpose of the knife mode is to assign sides fairly. It lasts for a single round and does not count as a win for either team.
 
 Last player standing at the end of *knife mode* gets to decide which side to start on (CT or T) by typing either `/stay` or `/switch`.
 
@@ -33,7 +33,7 @@ At the end scoreboard shows and server freezes.
 
 For a full list of CSGO server commands check [documentation on dathost](http://tools.dathost.net/csgo-commands).
 
-> *Note: Only preceed commands with `/` inside the CSGO game client (e.g. rcon) - using the `/` in tools (e.g. HLSW) or in the server's terminal will result in the command failing.*
+> *Note: Only precede commands with `/` inside the CSGO game client (e.g. rcon) - using the `/` in tools (e.g. HLSW) or in the server's terminal will result in the command failing.*
 
 * `/changelevel <levelname>` - Change server to the specified map
 * `/mp_pause_match` - Pause the match in the next freeze time
@@ -64,11 +64,11 @@ For a full list of Warmod commands [check the official documentation](https://fo
 
 At the start of every round the server writes a file called *LL_round##.txt* which can be loaded to restore the previous round. After a round is restored the game will be paused; when all players are ready unpause with `mp_unpause_match`. Players will need to hit "3" in order to discard the WarMod message and they can continue on.
 
-There are a lot of pitfalls so please read warnings careful. It is **highly* recommended you use [Snippet-Generator](https://github.com/LacledesLAN/Snippet-Generator) to run round restores.
+There are a lot of pitfalls so please read warnings carefully. It is **highly* recommended you use [Snippet-Generator](https://github.com/LacledesLAN/Snippet-Generator) to run round restores.
 
-*Note: file names are "zero-indexed". `LL_round00.txt` is for round 1, `LL_round01.txt` is round 2, and so on.*
+*Note: Be sure you're using the right number. **File names are "zero-indexed"**. `LL_round00.txt` is for round 1, `LL_round01.txt` is round 2, and so on.*
 
-After a game resets (for example if a *changelevel* command was issued) the server will start over-write any existing files, starting with LL_round00.txt.
+After a game resets (for example if a *changelevel* command was issued) the server will start over, over-writing any existing files starting with LL_round00.txt.
 
 **WARNINGS:**
 * Issuing the wrong round restore command may restore a round from a previous game.
@@ -85,7 +85,7 @@ Then once all players are ready issue the command `mp_unpause_match;`.
 ## Troubleshooting
 
 ### Client Checks
-The following checks can be preformed from a connected csgo client to ensure everything is working properly.
+The following checks can be preformed from a connected CSGO game client to ensure everything is working properly.
 
 #### Verify Metamod and SourceMod are Working
 

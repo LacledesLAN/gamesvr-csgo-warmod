@@ -12,7 +12,8 @@
             "presentation": {
                 "reveal": "always",
                 "panel": "shared"
-            }
+            },
+            "problemMatcher": []
         },
         {
             "taskName": "Build & Shell In",
@@ -23,7 +24,8 @@
             "presentation": {
                 "reveal": "always",
                 "panel": "shared"
-            }
+            },
+            "problemMatcher": []
         },
         {
             "taskName": "Build & Run Local Server",
@@ -39,7 +41,7 @@
         {
             "taskName": "Build",
             "type": "shell",
-            "command": "docker build . -f Dockerfile.linux -t test/gamesvr-csgo-tourney --no-cache --build-arg BUILDNODE=localhost;",
+            "command": "clear; docker pull lacledeslan/gamesvr-csgo; docker build . -f Dockerfile.linux -t test/gamesvr-csgo-tourney --no-cache --build-arg BUILDNODE=localhost;",
             "group": "build",
             "presentation": {
                 "reveal": "always",

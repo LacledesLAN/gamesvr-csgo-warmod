@@ -100,8 +100,8 @@ should_have 'Admin File Reader' 'LL status mod reports admin file reader';
 should_have 'Basic Info Triggers' 'LL status mod reports basic info triggers';
 should_have 'Basic Comm Control' 'LL status mod reports basic comm control';
 should_have 'Anti-Flood' "LL status mod reports anti-flood";
-#should_lack 'Successfully updated gamedata file "' 'SourceMod is not self updating'
-#should_lack 'SourceMod has been updated, please reload it or restart your server' 'SourceMod is not requesting restart'
+should_lack 'Successfully updated gamedata file "' 'SourceMod is not self updating'
+should_lack 'SourceMod has been updated, please reload it or restart your server' 'SourceMod is not requesting restart'
 
 echo $'\n\n[FINAL RESULT]';
 

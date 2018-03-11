@@ -3,7 +3,7 @@
 #####################################################################################################
 ### CONFIG VARS #####################################################################################
 declare LLTEST_CMD="/app/srcds_run -game csgo +game_type 0 +game_mode 1 +map de_nuke -insecure -tickrate 128 -norestart +sv_lan 1";
-declare LLTEST_NAME="gamesvr-csgo-$(date '+%H%M%S')";
+declare LLTEST_NAME="gamesvr-csgo-tourney$(date '+%H%M%S')";
 #####################################################################################################
 #####################################################################################################
 
@@ -171,7 +171,33 @@ should_lack 'Successfully updated gamedata file "' 'SourceMod is not self updati
 should_lack 'SourceMod has been updated, please reload it or restart your server' 'SourceMod is not requesting restart'
 
 # Verify server responds to commands
-should_echo "sv_cheats" '"sv_cheats" = "0" notify replicated';
+echo "Starting command tests";
+should_echo "say STARTING COMMAND TESTS" 'Console: STARTING COMMAND TESTS';
+
+# Verify essential tournament setings
+echo "...using gamemode_competitive_server.cfg";
+should_echo "exec gamemode_competitive_server.cfg" '"running gamemode_competitive_server.cfg"'; sleep 5;
+should_echo "mp_friendlyfire" 'mp_friendlyfire" = "1"';
+should_echo "mp_forcecamera" '"mp_forcecamera" = "1"';
+should_echo "mp_startmoney" '"mp_startmoney" = "800"';
+should_echo "mp_match_can_clinch" '"mp_match_can_clinch" = "1"';
+should_echo "mp_maxrounds" '"mp_maxrounds" = "30"';
+should_echo "mp_round_restart_delay" '"mp_round_restart_delay" = "5"';
+should_echo "mp_roundtime" '"mp_roundtime" = "1.75"';
+should_echo "mp_roundtime_defuse" '"mp_roundtime_defuse" = "1.75"';
+should_echo "wm_auto_knife" '"wm_auto_knife" = "1"';
+
+# Verify
+echo "...using /warmod/ruleset_default.cfg"; sleep 2;
+should_echo "exec /warmod/ruleset_default.cfg" '"runing warmod/ruleset_default.cfg"';
+should_echo "mp_overtime_enable" '"mp_overtime_enable" = "1"';
+
+# Verify overtime tournament settings
+echo "...using /warmod/ruleset_overtime.cfg";
+should_echo "exec /warmod/ruleset_overtime.cfg" '"running warmod/ruleset_global.cfg"'; sleep 3;
+should_echo "mp_overtime_enable" '"mp_overtime_enable" = "1"';
+should_echo "mp_overtime_maxrounds" '"mp_overtime_maxrounds" = "7"';
+should_echo "mp_overtime_startmoney" '"mp_overtime_startmoney" = "10000"';
 #####################################################################################################
 #####################################################################################################
 

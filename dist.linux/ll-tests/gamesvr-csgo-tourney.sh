@@ -145,14 +145,15 @@ fi;
 
 #####################################################################################################
 ### TESTS ###########################################################################################
-# Check vanilla server
+# Stock CSGO server tests
 should_have 'Setting breakpad minidump AppID = 740' 'Sever started executing';
 should_lack 'Server restart in 10 seconds' 'Server is not boot-looping';
 should_lack 'Running the dedicated server as root' 'Server is not running under root';
 should_have 'Game.dll loaded for "Counter-Strike: Global Offensive"' 'srcds_run loaded CSGO';
-should_have '[SM/MM Information]' 'Meta Mod and Source Mod are both running';
-should_have '\[warmod.smx\] Current Map' 'WarMod is bootstrapped';
 should_have 'Server is hibernating' 'srcds_run succesfully hibernated';
+should_lack 'map load failed:' 'Server was able to load custom-content the map'
+
+# LL Settings
 should_have 'Server logging enabled.' 'Logging is enabled';
 should_have 'Server logging data to file logs/' 'Server is logging to the logs directory';
 

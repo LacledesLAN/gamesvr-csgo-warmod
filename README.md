@@ -6,14 +6,15 @@
 [![](https://images.microbadger.com/badges/image/lacledeslan/gamesvr-csgo-tourney.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-tourney "Get your own image badge on microbadger.com")
 
 **Download**
+
 ```
-docker pull lacledeslan/gamesvr-csgo-tourney
+docker pull lacledeslan/gamesvr-csgo-tourney;
 ```
 
 **Run self tests**
-*Work in progress*
+
 ```
-docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh
+docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh;
 ```
 
 ## Tournament Flow

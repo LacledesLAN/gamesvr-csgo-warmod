@@ -5,13 +5,15 @@
 [![](https://images.microbadger.com/badges/version/lacledeslan/gamesvr-csgo-tourney.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-tourney "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/lacledeslan/gamesvr-csgo-tourney.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-tourney "Get your own image badge on microbadger.com")
 
-**Download**
+### Download
 
 ```
 docker pull lacledeslan/gamesvr-csgo-tourney;
 ```
 
-**Run self tests**
+### Run self tests
+
+The image includes a test script that can be used to verify its contents. No changes or pull-requests will be accepted to this repository if any tests fail.
 
 ```
 docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh;

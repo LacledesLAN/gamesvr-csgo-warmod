@@ -1,4 +1,7 @@
-differences
+This file contains all cvars that are non-default as of 3/10/2018.
+
+To generate this list type 'differences'
+
 "wm_chat_prefix" = "LL-Server" ( def. "WarMod_BFG" )                             - Change the chat prefix. Default is WarMod_BFG
 "cash_team_rescued_hostage" = "750" ( def. "0" ) game notify replicated
 "bot_autodifficulty_threshold_high" = "0.0" ( def. "5.0" ) min. -20.000000 max. 20.000000 game replicated - Upper bound above Average Human Contribution Score that a bot must be above to c
@@ -14,9 +17,7 @@ differences
 "ff_damage_reduction_bullets" = "0.33" ( def. "0.1" ) game replicated            - How much to reduce damage done to teammates when shot.  Range is from 0 - 1 (wit
 "tv_delay" = "105" ( def. "10" ) min. 0.000000 max. 120.000000 game              - GOTV broadcast delay in seconds
 "sv_gameinstructor_disable" = "1" ( def. "0" ) game replicated                   - Force all clients to disable their game instructors.
-"bot_quota_mode" = "fill" ( def. "normal" ) game replicated                      - Determines the type of quota.
-Allowed values: 'normal', 'fill', and 'match'.
-If
+"bot_quota_mode" = "fill" ( def. "normal" ) game replicated                      - Determines the type of quota. Allowed values: 'normal', 'fill', and 'match'.
 "wm_warmup_respawn" = "1" ( def. "0" ) min. 0.000000 max. 1.000000 notify        - Enable or disable the respawning of players in warmup
 "mp_join_grace_time" = "30.000000" ( def. "0.0" ) min. 0.000000 max. 30.000000 game replicated - Number of seconds after round start to allow a player to join a game
 "mp_maxrounds" = "30" ( def. "0" ) min. 0.000000 game notify replicated          - max number of rounds to play before server changes maps
@@ -35,7 +36,7 @@ If
 "mp_death_drop_gun" = "0" ( def. "1" ) min. 0.000000 max. 2.000000 game replicated - Which gun to drop on player death: 0=none, 1=best, 2=current or best
 "mp_ggprogressive_round_restart_delay" = "15" ( def. "15.0" ) min. 0.000000 max. 90.000000 game replicated - Number of seconds to delay before restarting a round after a win in gungame prog
 "host_players_show" = "2" ( def. "1" )                                           - How players are disclosed in server queries: 0 - query disabled, 1 - show only m
-"hostname" = "CSGO_Match_TEST_TOUR" ( def. "" )                                  - Hostname for server.
+"hostname" = "CSGO_Match_34B_sfd_v_ge" ( def. "" )                               - Hostname for server.
 "mp_match_end_restart" = "1" ( def. "0" ) min. 0.000000 max. 1.000000 game replicated - At the end of the match, perform a restart instead of loading a new map
 "mp_timelimit" = "0" ( def. "5" ) game notify replicated                         - game time per map in minutes
 "mp_warmuptime" = "300" ( def. "30" ) min. 5.000000 game replicated              - How long the warmup period lasts. Changing this value resets warmup.
@@ -59,8 +60,8 @@ If
 "spec_freeze_time" = "5.0" ( def. "3.0" ) game replicated                        - Time spend frozen in observer freeze cam.
 "wm_competition" = "Laclede's LAN" ( def. "WarMod BFG" )                         - Name of host for a competition. eg. ESEA, Cybergamer, CEVO, ESL
 "mp_buytime" = "120" ( def. "90" ) min. 0.000000 game replicated                 - How many seconds after round start players can buy items for.
-"mp_teamname_1" = "test" ( def. "" ) game                                        - A non-empty string overrides the first team's name.
-"mp_teamname_2" = "othertest" ( def. "" ) game                                   - A non-empty string overrides the second team's name.
+"mp_teamname_1" = "sfd" ( def. "" ) game                                         - A non-empty string overrides the first team's name.
+"mp_teamname_2" = "ge" ( def. "" ) game                                          - A non-empty string overrides the second team's name.
 "bot_difficulty" = "2" ( def. "1" ) game replicated                              - Defines the skill of bots joining the game.  Values are: 0=easy, 1=normal, 2=har
 "mp_playerid_delay" = "0.5" ( def. "0.4" ) min. 0.000000 max. 1.000000 game replicated - Number of seconds to delay showing information in the status bar
 "mp_roundtime_hostage" = "1.92" ( def. "0" ) min. 0.000000 max. 60.000000 game notify replicated - How many minutes each round of Hostage Rescue takes. If 0 then use mp_roundtime
@@ -68,9 +69,9 @@ If
 "wm_pause_confirm" = "0" ( def. "1" ) min. 0.000000 max. 1.000000 notify         - Wait for other team to confirm pause: 0 = off, 1 = on
 "bot_defer_to_human_goals" = "1" ( def. "0" ) game replicated                    - If nonzero and there is a human on the team, the bots will not do the scenario t
 "sv_teamid_overhead_always_prohibit" = "1" ( def. "0" ) game notify replicated   - Determines whether cl_teamid_overhead_always is prohibited.
-"host_map" = "de_cache.bsp" ( def. "" )                                          - Current map name.
-"sv_skyname" = "sky_cs15_daylight01_hdr" ( def. "sky_urb01" ) game archive replicated - Current name of the skybox texture
-"tv_name" = "zLLTV_CSGO_BRACKET_32" ( def. "GOTV" )                              - GOTV host name
+"host_map" = "de_inferno.bsp" ( def. "" )                                        - Current map name.
+"sv_skyname" = "nukeblank" ( def. "sky_urb01" ) game archive replicated          - Current name of the skybox texture
+"tv_name" = "zLLTV_CSGO_BRACKET_34" ( def. "GOTV" )                              - GOTV host name
 "sv_steamauth_enforce" = "0" ( def. "2" )                                        - By default, player must maintain a reliable connection to Steam servers. When pl
 "tv_maxclients" = "5" ( def. "128" ) min. 0.000000 max. 255.000000               - Maximum client number on GOTV server.
 "cash_team_hostage_interaction" = "150" ( def. "500" ) game notify replicated
@@ -92,8 +93,8 @@ If
 "ammo_grenade_limit_flashbang" = "2" ( def. "1" ) game replicated
 "mp_autoteambalance" = "0" ( def. "1" ) game notify
 "sv_contact" = "0" ( def. "" ) notify                                            - Contact email for server sysop
-"hostip" = "2130706689" ( def. "" )                                              - Host game server ip
-"mp_roundtime" = "1.9167" ( def. "5" ) min. 1.000000 max. 60.000000 game notify replicated - How many minutes each round takes.
+"hostip" = "-1408172030" ( def. "" )                                             - Host game server ip
+"mp_roundtime" = "1.75" ( def. "5" ) min. 1.000000 max. 60.000000 game notify replicated - How many minutes each round takes.
 "sv_kick_ban_duration" = "0" ( def. "15" ) game notify replicated                - How long should a kick ban from the server should last (in minutes)
 "mp_halftime" = "1" ( def. "0" ) game replicated                                 - Determines whether the match switches sides in a halftime event.
 "sv_spawn_afk_bomb_drop_time" = "30" ( def. "15" ) game replicated               - Players that have never moved since they spawned will drop the bomb after this a
@@ -104,6 +105,7 @@ If
 "think_limit" = "0" ( def. "10" ) game replicated                                - Maximum think time in milliseconds, warning is printed if this is exceeded.
 "sv_pausable" = "1" ( def. "0" )                                                 - Is the server pausable.
 "ff_damage_reduction_grenade" = "0.85" ( def. "0.25" ) game replicated           - How much to reduce damage done to teammates by a thrown grenade.  Range is from
+"sv_password" = "99racing" ( def. "" ) notify                                    - Server password for entry into multiplayer games
 "cash_team_elimination_hostage_map_ct" = "3000" ( def. "2000" ) game notify replicated
 "wm_save_dir" = "logs" ( def. "warmod" )                                         - Directory to store SourceTV demos and WarMod logs
 "sv_maxupdaterate" = "128.000000" ( def. "64" ) replicated                       - Maximum updates per second that the server will allow

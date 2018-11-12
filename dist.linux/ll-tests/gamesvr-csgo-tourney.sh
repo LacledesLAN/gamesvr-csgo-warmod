@@ -145,14 +145,15 @@ fi;
 
 #####################################################################################################
 ### TESTS ###########################################################################################
-# Check vanilla server
+# Stock CSGO server tests
 should_have 'Setting breakpad minidump AppID = 740' 'Sever started executing';
 should_lack 'Server restart in 10 seconds' 'Server is not boot-looping';
 should_lack 'Running the dedicated server as root' 'Server is not running under root';
 should_have 'Game.dll loaded for "Counter-Strike: Global Offensive"' 'srcds_run loaded CSGO';
-should_have '[SM/MM Information]' 'Meta Mod and Source Mod are both running';
-should_have '\[warmod.smx\] Current Map' 'WarMod is bootstrapped';
 should_have 'Server is hibernating' 'srcds_run succesfully hibernated';
+should_lack 'map load failed:' 'Server was able to load custom-content the map'
+
+# LL Settings
 should_have 'Server logging enabled.' 'Logging is enabled';
 should_have 'Server logging data to file logs/' 'Server is logging to the logs directory';
 
@@ -174,9 +175,9 @@ should_lack 'SourceMod has been updated, please reload it or restart your server
 echo "Starting command tests";
 should_echo "say STARTING COMMAND TESTS" 'Console: STARTING COMMAND TESTS';
 
-# Verify essential tournament setings
+# Verify gamemode_competitive_server.cfg
 echo "...using gamemode_competitive_server.cfg";
-should_echo "exec gamemode_competitive_server.cfg" '"running gamemode_competitive_server.cfg"'; sleep 5;
+should_echo "exec gamemode_competitive_server.cfg" '"running gamemode_competitive_server.cfg"'; sleep 2;
 should_echo "mp_friendlyfire" 'mp_friendlyfire" = "1"';
 should_echo "mp_forcecamera" '"mp_forcecamera" = "1"';
 should_echo "mp_startmoney" '"mp_startmoney" = "800"';
@@ -187,14 +188,24 @@ should_echo "mp_roundtime" '"mp_roundtime" = "1.75"';
 should_echo "mp_roundtime_defuse" '"mp_roundtime_defuse" = "1.75"';
 should_echo "wm_auto_knife" '"wm_auto_knife" = "1"';
 
-# Verify
-echo "...using /warmod/ruleset_default.cfg"; sleep 2;
-should_echo "exec /warmod/ruleset_default.cfg" '"runing warmod/ruleset_default.cfg"';
+# Verify ruleset_default.cfg
+echo "...using /warmod/ruleset_default.cfg";
+should_echo "exec /warmod/ruleset_default.cfg" '"running warmod/ruleset_default.cfg"'; sleep 2;
 should_echo "mp_overtime_enable" '"mp_overtime_enable" = "1"';
 
-# Verify overtime tournament settings
+# Verify /warmod/ruleset_default.cfg
+echo "...using /warmod/ruleset_default.cfg" '';
+should_echo "exec /warmod/ruleset_default.cfg" ''; sleep 2;
+should_echo "mp_overtime_maxrounds" '"mp_overtime_maxrounds" = "7"';
+
+# Verify /warmod/ruleset_playout.cfg
+echo "...using /warmod/ruleset_playout.cfg" '';
+should_echo "exec /warmod/ruleset_playout.cfg" ''; sleep 2;
+should_echo "mp_overtime_maxrounds" '"mp_overtime_maxrounds" = "7"';
+
+# Verify /warmod/ruleset_overtime.cfg
 echo "...using /warmod/ruleset_overtime.cfg";
-should_echo "exec /warmod/ruleset_overtime.cfg" '"running warmod/ruleset_global.cfg"'; sleep 3;
+should_echo "exec /warmod/ruleset_overtime.cfg" '"running warmod/ruleset_global.cfg"'; sleep 2;
 should_echo "mp_overtime_enable" '"mp_overtime_enable" = "1"';
 should_echo "mp_overtime_maxrounds" '"mp_overtime_maxrounds" = "7"';
 should_echo "mp_overtime_startmoney" '"mp_overtime_startmoney" = "10000"';

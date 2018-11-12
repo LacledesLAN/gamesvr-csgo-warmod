@@ -12,5 +12,3 @@ Enables a match of bots, 8 rounds, and disables knife round. may need to run /fo
 
 bottest.cfg
 Enables a match of bots, full 30 rounds, and disables knife round. may need to run /forcestart
- 
-

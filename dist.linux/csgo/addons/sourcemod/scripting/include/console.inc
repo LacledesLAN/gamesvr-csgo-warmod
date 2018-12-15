@@ -233,7 +233,7 @@ stock void PrintToConsoleAll(const char[] format, any ...)
 }
 
 /**
- * Reples to a message in a command.
+ * Replies to a message in a command.
  *
  * A client index of 0 will use PrintToServer().
  * If the command was from the console, PrintToConsole() is used.
@@ -432,6 +432,52 @@ native int GetCmdArg(int argnum, char[] buffer, int maxlength);
  * @return				Length of string written to buffer.
  */
 native int GetCmdArgString(char[] buffer, int maxlength);
+
+methodmap CommandIterator < Handle {
+	// Creates a new CommandIterator. Must be freed with delete or
+	// CloseHandle().
+	//
+	// The CommandIterator can be used to iterate commands created by
+	// SourceMod plugins and allows inspection of properties associated
+	// with the command.
+	// 
+	// @return		 New CommandIterator Handle.
+	public native CommandIterator();
+
+	// Determines if there is a next command. If one is found, the
+	// iterator is advanced to it.
+	//
+	// @return		true if found and iterator is advanced.
+	public native bool Next();
+
+	// Retrieves the command's description.
+	//
+	// @param buffer		Buffer to copy to.
+	// @param maxlen		Maximum size of the buffer.
+	// @error				Invalid iterator position.
+	public native void GetDescription(char[] buffer, int maxlen);
+
+	// Retrieves the command's name.
+	//
+	// @param buffer		Buffer to copy to.
+	// @param maxlen		Maximum size of the buffer.
+	// @error				Invalid iterator position.
+	public native void GetName(char[] buffer, int maxlen);
+
+	// Retrieves the plugin handle of the command's creator
+	//
+	// @error				Invalid iterator position.
+	property Handle Plugin {
+		public native get();
+	}
+
+	// Retrieves the command's default flags
+	//
+	// @error				Invalid iterator position.
+	property int Flags {
+		public native get();
+	}
+}
 
 /**
  * Gets a command iterator.  Must be freed with CloseHandle().

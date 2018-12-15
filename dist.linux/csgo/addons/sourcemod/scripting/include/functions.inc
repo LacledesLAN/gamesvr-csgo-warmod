@@ -291,6 +291,16 @@ native void Call_PushArray(const any[] value, int size);
 native void Call_PushArrayEx(any[] value, int size, int cpflags);
 
 /**
+ * Pushes the NULL_VECTOR onto the current call.
+ * @see IsNullVector
+ *
+ * @note Cannot be used before a call has been started.
+ *
+ * @error					Called before a call has been started.
+ */
+native void Call_PushNullVector();
+
+/**
  * Pushes a string onto the current call.
  *
  * @note Changes to string are not copied back to caller. Use PushStringEx() to do this.
@@ -318,6 +328,16 @@ native void Call_PushString(const char[] value);
 native void Call_PushStringEx(char[] value, int length, int szflags, int cpflags);
 
 /**
+ * Pushes the NULL_STRING onto the current call.
+ * @see IsNullString
+ *
+ * @note Cannot be used before a call has been started.
+ *
+ * @error					Called before a call has been started.
+ */
+native void Call_PushNullString();
+
+/**
  * Completes a call to a function or forward's call list.
  *
  * @note Cannot be used before a call has been started.
@@ -337,16 +357,30 @@ native int Call_Finish(any &result=0);
  */
 native void Call_Cancel();
 
-/**
- * Defines a native function.
- *
- * It is not necessary to validate the parameter count 
- *
- * @param plugin			Handle of the calling plugin.
- * @param numParams			Number of parameters passed to the native.
- * @return 					Value for the native call to return.
- */
-typedef NativeCall = function int (Handle plugin, int numParams);
+typeset NativeCall
+{
+	/**
+	 * Defines a native function.
+	 *
+	 * It is not necessary to validate the parameter count 
+	 *
+	 * @param plugin			Handle of the calling plugin.
+	 * @param numParams			Number of parameters passed to the native.
+	 * @return 					Value for the native call to return.
+	 */
+	function int (Handle plugin, int numParams);
+
+	/**
+	 * Defines a native function.
+	 *
+	 * It is not necessary to validate the parameter count 
+	 *
+	 * @param plugin			Handle of the calling plugin.
+	 * @param numParams			Number of parameters passed to the native.
+	 * @return 					Value for the native call to return.
+	 */
+	function any (Handle plugin, int numParams);
+}
 
 /**
  * Creates a dynamic native.  This should only be called in AskPluginLoad(), or 
@@ -464,6 +498,22 @@ native int GetNativeArray(int param, any[] local, int size);
  * @error					Invalid parameter number or calling from a non-native function.
  */
 native int SetNativeArray(int param, const any[] local, int size);
+
+/**
+ * Check if the native parameter is the NULL_VECTOR.
+ *
+ * @param param		Parameter number, starting from 1.
+ * @return        True if NULL_VECTOR, false otherwise.
+ */
+native bool IsNativeParamNullVector(int param);
+
+/**
+ * Check if the native parameter is the NULL_STRING.
+ *
+ * @param param		Parameter number, starting from 1.
+ * @return        True if NULL_STRING, false otherwise.
+ */
+native bool IsNativeParamNullString(int param);
 
 /**
  * Formats a string using parameters from a native.

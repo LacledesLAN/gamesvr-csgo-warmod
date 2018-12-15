@@ -37,93 +37,93 @@
 			/* CBasePlayer */
 			"GiveNamedItem"
 			{
-				"windows"	"406"
-				"linux"		"407"
-				"mac"		"407"
+				"windows"	"404"
+				"linux"		"405"
+				"mac"		"405"
 			}
 			"RemovePlayerItem"
-			{
-				"windows"	"275"
-				"linux"		"276"
-				"mac"		"276"
-			}
-			"Weapon_GetSlot"
 			{
 				"windows"	"273"
 				"linux"		"274"
 				"mac"		"274"
 			}
+			"Weapon_GetSlot"
+			{
+				"windows"	"271"
+				"linux"		"272"
+				"mac"		"272"
+			}
 			"Ignite"
 			{
-				"windows"	"214"
-				"linux"		"215"
-				"mac"		"215"
+				"windows"	"212"
+				"linux"		"213"
+				"mac"		"213"
 			}
 			"Extinguish"
 			{
-				"windows"	"218"
-				"linux"		"219"
-				"mac"		"219"
+				"windows"	"216"
+				"linux"		"217"
+				"mac"		"217"
 			}
 			"Teleport"
 			{
-				"windows"	"111"
-				"linux"		"112"
-				"mac"		"112"
+				"windows"	"109"
+				"linux"		"110"
+				"mac"		"110"
 			}
 			"CommitSuicide"
 			{
-				"windows"	"444"
-				"linux"		"445"
-				"mac"		"445"
+				"windows"	"443"
+				"linux"		"443"
+				"mac"		"443"
 			}
 			"GetVelocity"
 			{
-				"windows"	"143"
-				"linux"		"144"
-				"mac"		"144"
+				"windows"	"141"
+				"linux"		"142"
+				"mac"		"142"
 			}
 			"EyeAngles"
 			{
-				"windows"	"134"
-				"linux"		"135"
-				"mac"		"135"
+				"windows"	"132"
+				"linux"		"133"
+				"mac"		"133"
 			}
 			"AcceptInput"
 			{
-				"windows"	"39"
-				"linux"		"40"
-				"mac"		"40"
+				"windows"	"37"
+				"linux"		"38"
+				"mac"		"38"
 			}
 			"SetEntityModel"
 			{
-				"windows"	"27"
-				"linux"		"28"
-				"mac"		"28"
+				"windows"	"25"
+				"linux"		"26"
+				"mac"		"26"
 			}
 			"WeaponEquip"
 			{
-				"windows"	"266"
-				"linux"		"267"
-				"mac"		"267"
+				"windows"	"264"
+				"linux"		"265"
+				"mac"		"265"
 			}
 			"Activate"
 			{
-				"windows"	"36"
-				"linux"		"37"
-				"mac"		"37"
+				"windows"	"34"
+				"linux"		"35"
+				"mac"		"35"
 			}
 			"PlayerRunCmd"
 			{
-				"windows"	"424"
-				"linux"		"425"
-				"mac"		"425"
+				"windows"	"422"
+				"linux"		"423"
+				"mac"		"423"
 			}
 			"GiveAmmo"
 			{
-				"windows"	"257"
-				"linux"		"258"
-				"mac"		"258"
+				"windows"	"255"
+				"linux"		"256"
+				"mac"		"256"
 			}
 		}
 		

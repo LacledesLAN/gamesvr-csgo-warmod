@@ -99,6 +99,7 @@
 			"engine"			"csgo"
 			"engine"			"sdk2013"
 			"engine"			"contagion"
+			"engine"			"bms"
 		}
 		
 		"Offsets"
@@ -107,27 +108,7 @@
 			{
 				"windows"		"11"
 				"linux"			"12"
-				"linux64"		"12"
 				"mac"			"12"
-				"mac64"			"12"
-			}
-		}
-	}
-	
-	"#default"
-	{
-		"#supported"
-		{
-			"engine"			"bms"
-		}
-		
-		"Offsets"
-		{
-			"GetDataDescMap"
-			{
-				"windows"		"12"
-				"linux"			"13"
-				"mac"			"13"
 			}
 		}
 	}
@@ -181,7 +162,6 @@
 			"game"					"kz"
 			"game"					"doi"
 			"game"					"bms"
-			"game"					"iosoccer"
 		}
 
 		"Keys"
@@ -231,7 +211,6 @@
 			"game"					"kz"
 			"game"					"doi"
 			"game"					"bms"
-			"game"					"iosoccer"
 		}
 		
 		"Keys"

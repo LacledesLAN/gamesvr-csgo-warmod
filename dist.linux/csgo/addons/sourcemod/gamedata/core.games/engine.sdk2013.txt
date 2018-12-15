@@ -19,7 +19,6 @@
 		{
 			"game"		"synergy"
 			"game"		"empires"
-			"game"		"zps"
 		}
 		
 		"Offsets"

@@ -84,37 +84,6 @@ enum APLRes
 	APLRes_SilentFailure	/**< Plugin shouldn't load but do so silently */
 };
 
-methodmap GameData < Handle
-{
-	// Loads a game config file.
-	//
-	// @param file		File to load.  The path must be relative to the 'gamedata' folder under the config folder 
-	//					and the extension should be omitted.
-	// @return			A handle to the game config file or null on failure.
-	public native GameData(const char[] file);
-
-	// Returns an offset value.
-	//
-	// @param key		Key to retrieve from the offset section.
-	// @return			An offset, or -1 on failure.
-	public native int GetOffset(const char[] key);
-
-	// Gets the value of a key from the "Keys" section.
-	//
-	// @param key		Key to retrieve from the Keys section.
-	// @param buffer	Destination string buffer.
-	// @param maxlen	Maximum length of output string buffer.
-	// @return			True if key existed, false otherwise.
-	public native bool GetKeyValue(const char[] key, char[] buffer, int maxlen);
-
-	// Finds an address calculation in a GameConfig file,
-	// performs LoadFromAddress on it as appropriate, then returns the final address.
-	//
-	// @param name		Name of the property to find.
-	// @return			An address calculated on success, or 0 on failure.
-	public native Address GetAddress(const char[] name);
-};
-
 /**
  * Called when the plugin is fully initialized and all known external references 
  * are resolved. This is only called once in the lifetime of the plugin, and is 
@@ -344,16 +313,6 @@ native void SetFailState(const char[] string, any ...);
 native void ThrowError(const char[] fmt, any ...);
 
 /**
- * Logs a stack trace from the current function call. Code 
- * execution continues after the call
- *
- * @param fmt		Format string to send with the stack trace.
- * @param ...		Format arguments.
- * @error			Always logs a stack trace.
- */
-native void LogStackTrace(const char[] fmt, any ...);
-
-/**
  * Gets the system time as a unix timestamp.
  *
  * @param bigStamp		Optional array to store the 64bit timestamp in.
@@ -366,10 +325,6 @@ native int GetTime(int bigStamp[2]={0,0});
  *
  * See this URL for valid parameters: 
  * http://cplusplus.com/reference/clibrary/ctime/strftime.html
- * 
- * Note that available parameters depends on support from your operating system.
- * In particular, ones highlighted in yellow on that page are not currently
- * available on Windows and should be avoided for portable plugins.
  *
  * @param buffer		Destination string buffer.
  * @param maxlength		Maximum length of output string buffer.
@@ -384,9 +339,9 @@ native void FormatTime(char[] buffer, int maxlength, const char[] format, int st
  *
  * @param file			File to load.  The path must be relative to the 'gamedata' folder under the config folder 
  *					and the extension should be omitted.
- * @return			A handle to the game config file or INVALID_HANDLE on failure.
+ * @return			A handle to the game config file or INVALID_HANDLE in failure.
  */
-native GameData LoadGameConfigFile(const char[] file);
+native Handle LoadGameConfigFile(const char[] file);
 
 /**
  * Returns an offset value.
@@ -412,7 +367,7 @@ native bool GameConfGetKeyValue(Handle gc, const char[] key, char[] buffer, int 
  * Finds an address calculation in a GameConfig file,
  * performs LoadFromAddress on it as appropriate, then returns the final address.
  *
- * @param gameconf      Game config handle.
+ * @param gameconf      GameConfig Handle, or INVALID_HANDLE to use sdktools.games.txt.
  * @param name          Name of the property to find.
  * @return              An address calculated on success, or 0 on failure.
  */
@@ -689,37 +644,6 @@ native int LoadFromAddress(Address addr, NumberType size);
  * @param size          How many bytes should be written.
  */
 native void StoreToAddress(Address addr, int data, NumberType size); 
-
-methodmap FrameIterator < Handle {
-	// Creates a stack frame iterator to build your own stack traces.
-	// @return New handle to a FrameIterator.
-	public native FrameIterator();
-		
-	// Advances the iterator to the next stack frame.
-	// @return True if another frame was fetched and data can be successfully read.
-	// @error No next element exception.
-	public native bool Next();
-	
-	// Resets the iterator back to it's starting position.
-	public native void Reset();
-	
-	// Returns the line number of the current function call.
-	property bool LineNumber {
-		public native get();
-	}
-	
-	// Gets the name of the current function in the call stack.
-	//
-	// @param buffer Buffer to copy to.
-	// @param maxlen Max size of the buffer.
-	public native void GetFunctionName(char[] buffer, int maxlen);
-	
-	// Gets the file path to the current call in the call stack.
-	//
-	// @param buffer Buffer to copy to.
-	// @param maxlen Max size of the buffer.
-	public native void GetFilePath(char[] buffer, int maxlen);
-}
 
 #include <helpers>
 #include <entity>

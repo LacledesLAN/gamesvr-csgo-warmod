@@ -42,7 +42,6 @@
 #define TF_STUNFLAG_NOSOUNDOREFFECT (1 << 5)	/**< no sound or particle */
 #define TF_STUNFLAG_THIRDPERSON     (1 << 6)	/**< panic animation */
 #define TF_STUNFLAG_GHOSTEFFECT     (1 << 7)	/**< ghost particles */
-#define TF_STUNFLAG_SOUND           (1 << 8)	/**< sound */
 
 #define TF_STUNFLAGS_LOSERSTATE     TF_STUNFLAG_SLOWDOWN|TF_STUNFLAG_NOSOUNDOREFFECT|TF_STUNFLAG_THIRDPERSON
 #define TF_STUNFLAGS_GHOSTSCARE     TF_STUNFLAG_GHOSTEFFECT|TF_STUNFLAG_THIRDPERSON
@@ -196,17 +195,7 @@ enum TFCond
 	TFCond_KnockedIntoAir,
 	TFCond_CompetitiveWinner,
 	TFCond_CompetitiveLoser,
-	TFCond_NoTaunting_DEPRECATED,
-	TFCond_HealingDebuff = 118,
-	TFCond_PasstimePenaltyDebuff,
-	TFCond_GrappledToPlayer,
-	TFCond_GrappledByPlayer,
-	TFCond_ParachuteDeployed,
-	TFCond_Gas,
-	TFCond_BurningPyro,
-	TFCond_RocketPack,
-	TFCond_LostFooting,
-	TFCond_AirCurrent,
+	TFCond_NoTaunting,
 };
 
 const float TFCondDuration_Infinite = -1.0;

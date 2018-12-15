@@ -88,7 +88,6 @@
 	"engine.insurgency.txt"
 	{
 		"engine"	"insurgency"
-		"engine"	"doi" // #cheating #yolo
 	}
 	
 	"game.tf.txt"
@@ -217,7 +216,7 @@
 	}
 	"game.ios.txt"
 	{
-		"game"		"iosoccer"
+		"game"		"ios"
 	}
 	"game.left4dead2.txt"
 	{

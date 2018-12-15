@@ -125,15 +125,7 @@ public Action Command_Kick(int client, int args)
 {
 	if (args < 1)
 	{
-		if ((GetCmdReplySource() == SM_REPLY_TO_CHAT) && (client != 0))
-		{
-			DisplayKickMenu(client);
-		}
-		else
-		{
-			ReplyToCommand(client, "[SM] Usage: sm_kick <#userid|name> [reason]");
-		}
-		
+		ReplyToCommand(client, "[SM] Usage: sm_kick <#userid|name> [reason]");
 		return Plugin_Handled;
 	}
 

@@ -50,26 +50,22 @@ methodmap DataPack < Handle
 	// Packs a normal cell into a data pack.
 	//
 	// @param cell		Cell to add.
-	// @param insert	Determines whether mid-pack writes will insert instead of overwrite.
-	public native void WriteCell(any cell, bool insert = false);
+	public native void WriteCell(any cell);
 
 	// Packs a float into a data pack.
 	//
 	// @param val		Float to add.
-	// @param insert	Determines whether mid-pack writes will insert instead of overwrite.
-	public native void WriteFloat(float val, bool insert = false);
+	public native void WriteFloat(float val);
 
 	// Packs a string into a data pack.
 	//
 	// @param str		String to add.
-	// @param insert	Determines whether mid-pack writes will insert instead of overwrite.
-	public native void WriteString(const char[] str, bool insert = false);
+	public native void WriteString(const char[] str);
 
 	// Packs a function pointer into a data pack.
 	//
 	// @param fktptr	Function pointer to add.
-	// @param insert	Determines whether mid-pack writes will insert instead of overwrite.
-	public native void WriteFunction(Function fktptr, bool insert = false);
+	public native void WriteFunction(Function fktptr);
 
 	// Reads a cell from a data pack.
 	//
@@ -100,8 +96,8 @@ methodmap DataPack < Handle
 	// Returns whether or not a specified number of bytes from the data pack
 	//  position to the end can be read.
 	//
-	// @param unused	Unused variable. Exists for backwards compatability.
-	public native bool IsReadable(int unused = 0);
+	// @param bytes		Number of bytes to simulate reading.
+	public native bool IsReadable(int bytes);
 	
 	// The read or write position in a data pack.
 	property DataPackPos Position {

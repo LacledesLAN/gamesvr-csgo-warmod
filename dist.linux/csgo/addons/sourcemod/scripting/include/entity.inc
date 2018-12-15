@@ -122,10 +122,10 @@ native bool IsValidEdict(int edict);
 /**
  * Returns whether or not an entity has a valid networkable edict.
  *
- * @param entity		Index of the entity.
+ * @param edict			Index of the entity.
  * @return				True if networkable, false if invalid or not networkable.
  */
-native bool IsEntNetworkable(int entity);
+native bool IsEntNetworkable(int entiy);
 
 /**
  * Creates a new edict (the basis of a networkable entity)
@@ -141,14 +141,6 @@ native int CreateEdict();
  * @error				Invalid edict index.
  */
 native void RemoveEdict(int edict);
-
-/**
- * Marks an entity for deletion.
- *
- * @param entity		Index of the entity.
- * @error				Invalid entity index.
- */
-native void RemoveEntity(int entity);
 
 /**
  * Returns the flags on an edict.  These are not the same as entity flags.

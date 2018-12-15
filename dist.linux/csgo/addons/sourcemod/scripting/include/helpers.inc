@@ -36,18 +36,31 @@
 #define _helpers_included
 
 /**
- * This function is deprecated. Use the %L format specifier instead.
- * 
- * Formats a user's info as log text.
+ * Formats a user's info as log text.  This is usually not needed because
+ * %L can be used to auto-format client information into a string.
  *
  * @param client		Client index.
  * @param buffer		Buffer for text.
  * @param maxlength		Maximum length of text.
  */
-#pragma deprecated Use the %L format specifier instead.
 stock void FormatUserLogText(int client, char[] buffer, int maxlength)
 {
-	FormatEx(buffer, maxlength, "\"%L\"", client);
+	char auth[32];
+	char name[MAX_NAME_LENGTH];
+	
+	int userid = GetClientUserId(client);
+	if (!GetClientAuthString(client, auth, sizeof(auth)))
+	{
+		strcopy(auth, sizeof(auth), "UNKNOWN");
+	}
+	if (!GetClientName(client, name, sizeof(name)))
+	{
+		strcopy(name, sizeof(name), "UNKNOWN");
+	}
+	
+	/** Currently, no team stuff ... */
+	
+	Format(buffer, maxlength, "\"%s<%d><%s><>\"", name, userid, auth);
 }
 
 /**

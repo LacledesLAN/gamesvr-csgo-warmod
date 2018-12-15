@@ -392,7 +392,7 @@ native bool IsCharLower(int chr);
 native bool StripQuotes(char[] text);
 
 /**
- * Converts a lowercase character to its uppercase counterpart.
+ * Returns a lowercase character to an uppercase character.
  *
  * @param chr			Character to convert.
  * @return				Uppercase character on success, 
@@ -408,7 +408,7 @@ stock int CharToUpper(int chr)
 }
 
 /**
- * Converts an uppercase character to its lowercase counterpart.
+ * Returns an uppercase character to a lowercase character.
  *
  * @param chr			Character to convert.
  * @return				Lowercase character on success, 

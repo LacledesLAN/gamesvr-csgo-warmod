@@ -254,10 +254,7 @@ public Action Command_FriendlyFire(int client, int args)
 
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
-	if (IsChatTrigger())
-	{
-	}
-	else if (strcmp(sArgs, "timeleft", false) == 0)
+	if (strcmp(sArgs, "timeleft", false) == 0)
 	{
 		ShowTimeLeft(client, TIMELEFT_ALL_MAYBE);
 	}

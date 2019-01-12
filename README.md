@@ -4,7 +4,7 @@ This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its c
 
 ## Linux
 
-[![Build Status](https://dev.azure.com/LacledesLAN/Game%20Servers/_apis/build/status/gamesvr-csgo-tourney)](https://dev.azure.com/LacledesLAN/Game%20Servers/_build/latest?definitionId=5)
+[![Build Status](https://dev.azure.com/LacledesLAN/Game%20Servers/_apis/build/status/gamesvr-csgo-warmod?branchName=master)](https://dev.azure.com/LacledesLAN/Game%20Servers/_build/latest?definitionId=6?branchName=master)
 [![](https://images.microbadger.com/badges/version/lacledeslan/gamesvr-csgo-warmod.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-warmod "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/lacledeslan/gamesvr-csgo-warmod.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-warmod "Get your own image badge on microbadger.com")
 

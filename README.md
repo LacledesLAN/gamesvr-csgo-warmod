@@ -1,4 +1,4 @@
-![thumb-csgo-tourney](https://raw.githubusercontent.com/LacledesLAN/gamesvr-csgo-tourney/master/.misc/thumb-csgo-tourney.png "thumb-csgo-tourney")
+![thumb-csgo-warmod](https://raw.githubusercontent.com/LacledesLAN/gamesvr-csgo-warmod/master/.misc/thumb-csgo-warmod.png "thumb-csgo-warmod")
 
 This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its contents are heavily tailored and tweaked for use at our charity LAN-Parties. For third-parties we recommend using this repo only as a reference example and then building your own using [gamesvr-csgo](https://github.com/LacledesLAN/gamesvr-csgo) as the base image for your customized server.
 
@@ -11,7 +11,7 @@ This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its c
 ### Download
 
 ```
-docker pull lacledeslan/gamesvr-csgo-tourney;
+docker pull lacledeslan/gamesvr-csgo-warmod;
 ```
 
 ### Run self tests
@@ -19,11 +19,11 @@ docker pull lacledeslan/gamesvr-csgo-tourney;
 The image includes a test script that can be used to verify its contents. No changes or pull-requests will be accepted to this repository if any tests fail.
 
 ```
-docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-tourney.sh;
+docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-warmod.sh;
 ```
 
-## Tournament Flow
-Game flow is largely controlled by [Warmod [BFG]](https://forums.alliedmods.net/showthread.php?t=225474).
+## Warmod Flow
+Flow is controlled by [Warmod [BFG]](https://forums.alliedmods.net/showthread.php?t=225474).
 
 Server starts in *warm up* mode where players can toggle themselves as `/ready`. Once all ten players are ready *knife mode* begins. The purpose of the knife mode is to assign sides fairly. It lasts for a single round and does not count as a win for either team.
 

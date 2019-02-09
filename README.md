@@ -19,7 +19,7 @@ docker pull lacledeslan/gamesvr-csgo-warmod;
 The image includes a test script that can be used to verify its contents. No changes or pull-requests will be accepted to this repository if any tests fail.
 
 ```
-docker run --rm lacledeslan/gamesvr-csgo-tourney ./ll-tests/gamesvr-csgo-warmod.sh;
+docker run --rm lacledeslan/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod.sh;
 ```
 
 ## Warmod Flow

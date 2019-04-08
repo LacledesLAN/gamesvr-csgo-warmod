@@ -41,7 +41,7 @@
         {
             "taskName": "Build",
             "type": "shell",
-            "command": "clear; docker pull lacledeslan/gamesvr-csgo; docker build . -f Dockerfile.linux -t test/gamesvr-csgo-warmod --no-cache --build-arg BUILDNODE=localhost;",
+            "command": "clear; docker pull lacledeslan/gamesvr-csgo; docker build . -f linux.Dockerfile -t test/gamesvr-csgo-warmod --no-cache --build-arg BUILDNODE=localhost;",
             "group": "build",
             "presentation": {
                 "reveal": "always",

@@ -16,12 +16,12 @@ steps:
 - script: docker run --rm lacledeslan/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod.sh;
   displayName: 'Latest - Run Self Tests'
 # HASTY
-- script: docker build . -f linux.Dockerfile -t lacledeslan/gamesvr-csgo-warmod:hasty --no-cache --build-arg BUILDNODE=Azure;
+- script: docker build . -f linux.hasty.Dockerfile -t lacledeslan/gamesvr-csgo-warmod:hasty --no-cache --build-arg BUILDNODE=Azure;
   displayName: 'Hasty - Docker Build'
 - script: docker run --rm lacledeslan/gamesvr-csgo-warmod:hasty ./ll-tests/gamesvr-csgo-warmod-hasty.sh;
   displayName: 'Hasty - Run Self Tests'
 # OVERTIME
-- script: docker build . -f linux.Dockerfile -t lacledeslan/gamesvr-csgo-warmod:overtime --no-cache --build-arg BUILDNODE=Azure;
+- script: docker build . -f linux.overtime.Dockerfile -t lacledeslan/gamesvr-csgo-warmod:overtime --no-cache --build-arg BUILDNODE=Azure;
   displayName: 'Overtime - Docker Build'
 - script: docker run --rm lacledeslan/gamesvr-csgo-warmod:overtime ./ll-tests/gamesvr-csgo-warmod-overtime.sh;
   displayName: 'Overtime - Run Self Tests'

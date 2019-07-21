@@ -90,6 +90,19 @@ mp_backup_restore_load_file LL_round04; mp_backup_restore_load_file LL_round04; 
 
 Then once all players are ready issue the command `mp_unpause_match;`.
 
+## To Extract Log Files
+
+```shell
+docker ps -a | grep lacledeslan/gamesvr-csgo- | awk '{ print $14 }' | while read containerName; do
+	echo Extracting for $containerName
+	docker cp $containerName:/app/csgo/logs ~/$containerName/
+	rm -f ~/$containerName/*.txt
+	docker cp $containerName:/app/csgo/addons/sourcemod/logs ~/$containerName/sourcemod/
+	rm -f ~/$containerName/sourcemod/accelerator.log
+	rm -f ~/$containerName/sourcemod/*.txt
+done
+```
+
 ## Troubleshooting
 
 ### Client Checks

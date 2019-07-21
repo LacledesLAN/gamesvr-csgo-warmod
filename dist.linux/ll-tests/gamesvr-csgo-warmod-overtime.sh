@@ -3,7 +3,7 @@
 #####################################################################################################
 ### CONFIG VARS #####################################################################################
 declare LLTEST_CMD="/app/srcds_run -game csgo +game_type 0 +game_mode 1 +map de_nuke -insecure -tickrate 128 -norestart +sv_lan 1";
-declare LLTEST_NAME="gamesvr-csgo-warmod$(date '+%H%M%S')";
+declare LLTEST_NAME="gamesvr-csgo-warmod-overtime$(date '+%H%M%S')";
 #####################################################################################################
 #####################################################################################################
 
@@ -17,20 +17,20 @@ declare LLTEST_RESULTSFILE="$LLTEST_NAME"".results";
 # Server log file should contain $1 because $2
 function should_have() {
     if ! grep -i -q "$1" "$LLTEST_LOGFILE"; then
-        echo $"[FAIL] - '$2'" >> "$LLTEST_RESULTSFILE";
+        echo $"[FAIL] - $2" >> "$LLTEST_RESULTSFILE";
         LLTEST_HASFAILURES=true;
     else
-        echo $"[PASS] - '$2'" >> "$LLTEST_RESULTSFILE";
+        echo $"[PASS] - $2" >> "$LLTEST_RESULTSFILE";
     fi;
 }
 
 # Server log file should NOT contain $1 because $2
 function should_lack() {
     if grep -i -q "$1" "$LLTEST_LOGFILE"; then
-        echo $"[FAIL] - '$2'" >> "$LLTEST_RESULTSFILE";
+        echo $"[FAIL] - $2" >> "$LLTEST_RESULTSFILE";
         LLTEST_HASFAILURES=true;
     else
-        echo $"[PASS] - '$2'" >> "$LLTEST_RESULTSFILE";
+        echo $"[PASS] - $2" >> "$LLTEST_RESULTSFILE";
     fi;
 }
 
@@ -158,7 +158,6 @@ should_have 'Server logging enabled.' 'Logging is enabled';
 should_have 'Server logging data to file logs/' 'Server is logging to the logs directory';
 
 # Check SourceMod/MetaMod plugins
-should_lack 'Host_Error: DLL_Crosshairangle: not a client' '2019.03.28 bug not found (https://forums.alliedmods.net/showthread.php?t=315229)'
 should_have 'WarMod \[BFG\] WarmUp Config Loaded' 'WarMod loaded config properly';
 should_have '======================BEGIN SERVER STATUS======================' 'LL status mod ran';
 should_lack '<Error>' 'LL status mod reports no errors';
@@ -179,37 +178,27 @@ should_echo "say STARTING COMMAND TESTS" 'Console: STARTING COMMAND TESTS';
 # Verify gamemode_competitive_server.cfg
 echo "...using gamemode_competitive_server.cfg";
 should_echo "exec gamemode_competitive_server.cfg" '"running gamemode_competitive_server.cfg"'; sleep 2;
-should_echo "mp_friendlyfire" 'mp_friendlyfire" = "1"';
-should_echo "mp_forcecamera" '"mp_forcecamera" = "1"';
-should_echo "mp_startmoney" '"mp_startmoney" = "800"';
-should_echo "mp_match_can_clinch" '"mp_match_can_clinch" = "1"';
-should_echo "mp_maxrounds" '"mp_maxrounds" = "30"';
-should_echo "mp_round_restart_delay" '"mp_round_restart_delay" = "5"';
-should_echo "mp_roundtime" '"mp_roundtime" = "1.75"';
-should_echo "mp_roundtime_defuse" '"mp_roundtime_defuse" = "1.75"';
-should_echo "wm_auto_knife" '"wm_auto_knife" = "1"';
+should_echo "mp_maxrounds" 'mp_maxrounds" = "7"';
+should_echo "mp_startmoney" 'mp_startmoney" = "10000"';
 
-# Verify ruleset_default.cfg
+
+# Verify warmod/ruleset_default.cfg
 echo "...using /warmod/ruleset_default.cfg";
 should_echo "exec /warmod/ruleset_default.cfg" '"running warmod/ruleset_default.cfg"'; sleep 2;
-should_echo "mp_overtime_enable" '"mp_overtime_enable" = "1"';
+should_echo "mp_maxrounds" 'mp_maxrounds" = "7"';
+should_echo "mp_startmoney" 'mp_startmoney" = "10000"';
 
-# Verify /warmod/ruleset_default.cfg
-echo "...using /warmod/ruleset_default.cfg" '';
-should_echo "exec /warmod/ruleset_default.cfg" ''; sleep 2;
-should_echo "mp_overtime_maxrounds" '"mp_overtime_maxrounds" = "7"';
+# Verify warmod/ruleset_global.cfg
+echo "...using /warmod/ruleset_global.cfg";
+should_echo "exec /warmod/ruleset_global.cfg" '"running warmod/ruleset_global.cfg"'; sleep 2;
+should_echo "mp_maxrounds" 'mp_maxrounds" = "7"';
+should_echo "mp_startmoney" 'mp_startmoney" = "10000"';
 
 # Verify /warmod/ruleset_playout.cfg
 echo "...using /warmod/ruleset_playout.cfg" '';
 should_echo "exec /warmod/ruleset_playout.cfg" ''; sleep 2;
-should_echo "mp_overtime_maxrounds" '"mp_overtime_maxrounds" = "7"';
-
-# Verify /warmod/ruleset_overtime.cfg
-echo "...using /warmod/ruleset_overtime.cfg";
-should_echo "exec /warmod/ruleset_overtime.cfg" '"running warmod/ruleset_global.cfg"'; sleep 2;
-should_echo "mp_overtime_enable" '"mp_overtime_enable" = "1"';
-should_echo "mp_overtime_maxrounds" '"mp_overtime_maxrounds" = "7"';
-should_echo "mp_overtime_startmoney" '"mp_overtime_startmoney" = "10000"';
+should_echo "mp_maxrounds" 'mp_maxrounds" = "7"';
+should_echo "mp_startmoney" 'mp_startmoney" = "10000"';
 #####################################################################################################
 #####################################################################################################
 

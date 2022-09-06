@@ -1,16 +1,22 @@
+# Laclede's LAN CSGO Warmod Server in Docker
+
 ![thumb-csgo-warmod](https://raw.githubusercontent.com/LacledesLAN/gamesvr-csgo-warmod/master/.misc/thumb-csgo-warmod.png "thumb-csgo-warmod")
 
 This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its contents are heavily tailored and tweaked for use at our charity LAN-Parties. For third-parties we recommend using this repo only as a reference example and then building your own using [gamesvr-csgo](https://github.com/LacledesLAN/gamesvr-csgo) as the base image for your customized server.
 
 ## Linux
 
-[![Build Status](https://dev.azure.com/LacledesLAN/Game%20Servers/_apis/build/status/gamesvr-csgo-warmod?branchName=master)](https://dev.azure.com/LacledesLAN/Game%20Servers/_build/latest?definitionId=6?branchName=master)
-[![](https://images.microbadger.com/badges/version/lacledeslan/gamesvr-csgo-warmod.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-warmod "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/image/lacledeslan/gamesvr-csgo-warmod.svg)](https://microbadger.com/images/lacledeslan/gamesvr-csgo-warmod "Get your own image badge on microbadger.com")
+### Tags
+
+| Tag        | Description                                                |
+| ---------- | ---------------------------------------------------------- |
+| `latest`   | Normal game rules                                          |
+| `hasty`    | Configurations tweaked for shorter play and server testing |
+| `overtime` | Overtime game rules                                        |
 
 ### Download
 
-```
+```shell
 docker pull lacledeslan/gamesvr-csgo-warmod;
 ```
 
@@ -18,11 +24,12 @@ docker pull lacledeslan/gamesvr-csgo-warmod;
 
 The image includes a test script that can be used to verify its contents. No changes or pull-requests will be accepted to this repository if any tests fail.
 
-```
+```shell
 docker run --rm lacledeslan/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod.sh;
 ```
 
 ## Warmod Flow
+
 Flow is controlled by [Warmod [BFG]](https://forums.alliedmods.net/showthread.php?t=225474).
 
 Server starts in *warm up* mode where players can toggle themselves as `/ready`. Once all ten players are ready *knife mode* begins. The purpose of the knife mode is to assign sides fairly. It lasts for a single round and does not count as a win for either team.
@@ -48,15 +55,18 @@ For a full list of CSGO server commands check [documentation on dathost](http://
 * `/sv_password <new password>` - Change the server's password
 
 ## Useful Warmod [BFG] Commands
+
 For a full list of Warmod commands [check the official documentation](https://forums.alliedmods.net/showthread.php?t=225474).
 
-#### CLIENT (Player) Commands
+### CLIENT (Player) Commands
+
 * `/info` - Displays who's ready if panel was closed (warmup mode only)
 * `/ready` - Marks you as ready (warmup mode only)
 * `/scores` - Display scores (live play only)
 * `/unready` - Marks you as unready (warmup mode only)
 
-#### Admin Commands
+### Admin Commands
+
 * `/forceallready` - Forces all players to become ready.
 * `/forceallunready` - Forces all players to become unready.
 * `/forcestart` - Starts the match regardless of player and ready count.
@@ -94,13 +104,12 @@ Then once all players are ready issue the command `mp_unpause_match;`.
 
 ```shell
 docker ps -a | grep lacledeslan/gamesvr-csgo- | awk '{ print $14 }' | while read containerName; do
-	echo Extracting for $containerName
-	docker cp $containerName:/app/csgo/logs ~/$containerName/
-	rm -f ~/$containerName/*.txt
-	docker cp $containerName:/app/csgo/addons/sourcemod/logs ~/$containerName/sourcemod/
-	rm -f ~/$containerName/sourcemod/accelerator.log
-	rm -f ~/$containerName/sourcemod/*.txt
-done
+echo Extracting for $containerName
+docker cp $containerName:/app/csgo/logs ~/$containerName/
+rm -f ~/$containerName/*.txt
+docker cp $containerName:/app/csgo/addons/sourcemod/logs ~/$containerName/sourcemod/
+rm -f ~/$containerName/sourcemod/accelerator.log
+rm -f ~/$containerName/sourcemod/*.txt
 ```
 
 ## Troubleshooting

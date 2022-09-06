@@ -45,6 +45,8 @@
 #define CS_SLOT_KNIFE       2   /**< Knife slot. */
 #define CS_SLOT_GRENADE     3   /**< Grenade slot (will only return one grenade). */
 #define CS_SLOT_C4          4   /**< C4 slot. */
+#define CS_SLOT_BOOST       11  /**< Slot for healthshot and shield (will only return one weapon/item). */
+#define CS_SLOT_UTILITY     12  /**< Slot for tablet. */
 
 #define CS_DMG_HEADSHOT     (1 << 30)    /**< Headshot */
 
@@ -156,6 +158,7 @@ enum CSWeaponID
 	CSWeapon_BUMPMINE = 85,
 	CSWeapon_MAX_WEAPONS_NO_KNIFES, // Max without the knife item defs, useful when treating all knives as a regular knife.
 	CSWeapon_BAYONET = 500,
+	CSWeapon_KNIFE_CLASSIC = 503,
 	CSWeapon_KNIFE_FLIP = 505,
 	CSWeapon_KNIFE_GUT = 506,
 	CSWeapon_KNIFE_KARAMBIT = 507,
@@ -165,10 +168,14 @@ enum CSWeaponID
 	CSWeapon_KNIFE_SURVIVAL_BOWIE = 514,
 	CSWeapon_KNIFE_BUTTERFLY = 515,
 	CSWeapon_KNIFE_PUSH = 516,
+	CSWeapon_KNIFE_CORD = 517,
+	CSWeapon_KNIFE_CANIS = 518,
 	CSWeapon_KNIFE_URSUS = 519,
 	CSWeapon_KNIFE_GYPSY_JACKKNIFE = 520,
+	CSWeapon_KNIFE_OUTDOOR = 521,
 	CSWeapon_KNIFE_STILETTO = 522,
 	CSWeapon_KNIFE_WIDOWMAKER = 523,
+	CSWeapon_KNIFE_SKELETON = 525,
 	CSWeapon_MAX_WEAPONS //THIS MUST BE LAST, EASY WAY TO CREATE LOOPS. When looping, do CS_IsValidWeaponID(i), to check.
 };
 
@@ -189,8 +196,10 @@ forward Action CS_OnBuyCommand(int client, const char[] weapon);
  *
  * @param client        Client index
  * @param weaponIndex   Weapon index
+ * @param donated       Was weapon donated (Bought from a buy menu while ctrl was pressed)
+ *                      (Note: This param is for CS:GO only, will be false on other games)
  */
-forward Action CS_OnCSWeaponDrop(int client, int weaponIndex);
+forward Action CS_OnCSWeaponDrop(int client, int weaponIndex, bool donated);
 
 /**
  * Called when game retrieves a weapon's price for a player.

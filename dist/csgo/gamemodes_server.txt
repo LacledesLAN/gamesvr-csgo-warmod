@@ -1,157 +1,74 @@
+//built using https://beta.configcreator.com/create/csgo/gamemodes_server.txt
+
 "Gamemodes_Server.txt"
 {
-	"gameTypes"
-	{
-		"classic"
-		{
-			"gameModes"
-			{
-				"casual"
-				{
-					"mapgroupsMP"
-					{
-						"ll_bomb" ""
-						"ll_orange" ""
-						"mg_bomb_se" ""
-					}
-				}
-				"competitive"
-				{
-					"mapgroupsMP"
-					{
-						"ll_bomb" ""
-						"ll_orange" ""
-						"mg_bomb_se" ""
-					}
-				}
-			}
-		}
-	}
-	"mapgroups"
-	{
-		"ll_bomb"
-		{
-			"name" "ll_bomb"
-			"maps"
-			{
-				"de_ali " "0"
-				"de_austria" "1"
-				"de_aztec" "2"
-				"de_bazaar" "3"
-				"de_blackgold" "4"
-				"de_cache" "5"
-				"de_canals" "6"
-				"de_castle" "7"
-				"de_cbble" "8"
-				"de_coast" "9"
-				"de_dust" "10"
-				"de_dust2" "11"
-				"de_empire" "12"
-				"de_facade" "13"
-				"de_favela" "14"
-				"de_inferno" "15"
-				"de_lite" "16"
-				"de_log" "17"
-				"de_marquis" "18"
-				"de_mikla" "19"
-				"de_mirage" "20"
-				"de_mist" "21"
-				"de_nuke" "22"
-				"de_nuke_se" "23"
-				"de_overgrown" "24"
-				"de_overpass" "25"
-				"de_rails" "26"
-				"de_resort" "27"
-				"de_royal" "28"
-				"de_santorini" "29"
-				"de_seaside" "30"
-				"de_season" "31"
-				"de_thrill" "32"
-				"de_train" "33"
-				"de_tulip" "34"
-				"de_vertigo" "35"
-				"de_zoo" "36"
-			}
-		}
-		"ll_bombhostage"
-		{
-			"name" "ll_bombhostage"
-			"maps"
-			{
-				"cs_assault" "0"
-				"cs_insertion" "1"
-				"cs_italy" "2"
-				"cs_militia" "3"
-				"cs_office" "4"
-				"cs_rush" "5"
-				"de_ali" "6"
-				"de_ali " "7"
-				"de_austria" "8"
-				"de_aztec" "9"
-				"de_aztec_se" "10"
-				"de_bazaar" "11"
-				"de_blackgold" "12"
-				"de_cache" "13"
-				"de_canals" "14"
-				"de_castle" "15"
-				"de_cbble" "16"
-				"de_coast" "17"
-				"de_dust" "18"
-				"de_dust2" "19"
-				"de_dust2_se" "20"
-				"de_dust_se" "21"
-				"de_empire" "22"
-				"de_facade" "23"
-				"de_favela" "24"
-				"de_inferno" "25"
-				"de_inferno_se" "26"
-				"de_lite" "27"
-				"de_log" "28"
-				"de_marquis" "29"
-				"de_mikla" "30"
-				"de_mirage" "31"
-				"de_mist" "32"
-				"de_nuke" "33"
-				"de_nuke_se" "34"
-				"de_orange" "35"
-				"de_overgrown" "36"
-				"de_overpass" "37"
-				"de_rails" "38"
-				"de_resort" "39"
-				"de_royal" "40"
-				"de_santorini" "41"
-				"de_seaside" "42"
-				"de_season" "43"
-				"de_thrill" "44"
-				"de_train" "45"
-				"de_train_se" "46"
-				"de_tulip" "47"
-				"de_vertigo" "48"
-				"de_zoo" "49"
-			}
-		}
-		"ll_orange"
-		{
-			"name" "ll_orange"
-			"maps"
-			{
-				"de_orange" "0"
-				"gg_ctm_csgo" "1"
-				"fy_pool_day" "2"
-				"orangebox_warmup_day" "3"
-			}
-		}
-		"mg_bomb_se"
-		{
-			"name" "mg_bomb_se"
-			"maps"
-			{
-				"de_dust2_se" "0"
-				"de_dust_se" "1"
-				"de_nuke_se" "2"
-				"de_train_se" "3"
-				"de_inferno_se" "4"
-			}
-		}
-	}
+    "gameTypes"
+    {
+        "classic"
+        {
+            "gameModes"
+            {
+                "casual"
+                {
+                    "mapgroupsMP"
+                    {
+                        "ll_bomb"
+                    }
+                }
+                "competitive"
+                {
+                    "mapgroupsMP"
+                    {
+                        "ll_bomb"
+                    }
+                }
+            }
+        }
+        "gungame"
+        {
+            "gameModes"
+            {
+                "armsrace"
+                {
+                    "mapgroupsMP"
+                    {
+                        "ll_bomb"
+                    }
+                }
+            }
+        }
+    }
+    "mapgroups"
+    {
+        "ll_bomb"
+        {
+            "name" "ll_bomb"
+            "maps"
+            {
+                "de_aztec" "0"
+                "de_blackgold" "1"
+                "de_castle" "2"
+                "de_cbble" "3"
+                "de_dust" "4"
+                "de_dust2" "5"
+                "de_inferno" "6"
+                "de_mist" "7"
+                "de_nuke" "8"
+                "de_overgrown" "9"
+                "de_overpass" "10"
+                "de_train" "11"
+                "de_vertigo" "12"
+                "de_prodigy" "17"
+            }
+        }
+        "ll_orange"
+        {
+            "name" "ll_orange"
+            "maps"
+            {
+                "clienttest-pillar" "0"
+                "poolday" "1"
+            }
+        }
+    }
 }

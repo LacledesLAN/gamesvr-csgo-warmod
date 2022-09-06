@@ -264,7 +264,7 @@ stock int RoundFloat(float value)
 #if !defined __sourcepawn2__
 #pragma rational Float
 
-// Internal aliases for backwards compatability.
+// Internal aliases for backwards compatibility.
 native float __FLOAT_MUL__(float a, float b) = FloatMul;
 native float __FLOAT_DIV__(float a, float b) = FloatDiv;
 native float __FLOAT_ADD__(float a, float b) = FloatAdd;
@@ -390,9 +390,9 @@ stock bool operator<=(int oper1, float oper2)
 /**
  * Forbidden operators.
  */
-forward operator%(float oper1, float oper2);
-forward operator%(float oper1, int oper2);
-forward operator%(int oper1, float oper2);
+forward float operator%(float oper1, float oper2);
+forward float operator%(float oper1, int oper2);
+forward float operator%(int oper1, float oper2);
 #endif // __sourcepawn2__
 
 #define FLOAT_PI 3.1415926535897932384626433832795

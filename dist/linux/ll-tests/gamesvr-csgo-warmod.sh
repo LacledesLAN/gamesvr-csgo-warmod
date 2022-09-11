@@ -3,7 +3,7 @@
 #####################################################################################################
 ### CONFIG VARS #####################################################################################
 declare LLTEST_CMD="/app/srcds_run -game csgo +game_type 0 +game_mode 1 +map de_nuke -insecure -tickrate 128 -norestart +sv_lan 1";
-declare LLTEST_NAME="gamesvr-csgo-warmod$(date '+%H%M%S')";
+declare LLTEST_NAME="gamesvr-csgo-warmod-latest$(date '+%H%M%S')";
 #####################################################################################################
 #####################################################################################################
 
@@ -153,25 +153,26 @@ should_have 'Game.dll loaded for "Counter-Strike: Global Offensive"' 'srcds_run 
 should_have 'Server is hibernating' 'srcds_run succesfully hibernated';
 should_lack 'map load failed:' 'Server was able to load custom-content the map';
 should_lack 'Your server needs to be restarted in order to receive the latest update.' 'Server is not reporting itself as out of date';
+should_echo 'version' 'Exe version'
 
 # LL Settings
 should_have 'Server logging enabled.' 'Logging is enabled';
 should_have 'Server logging data to file logs/' 'Server is logging to the logs directory';
 
+
 # Check SourceMod/MetaMod plugins
-should_lack 'Host_Error: DLL_Crosshairangle: not a client' '2019.03.28 bug not found (https://forums.alliedmods.net/showthread.php?t=315229)'
+should_echo 'sm plugins list' ''
+should_have '\[BFG\] WarMod' 'LLWarMod';
+should_have 'Admin File Reader' 'Admin file reader plugin';
+should_have 'Anti-Flood' "anti-flood plugin";
+should_have 'Basic Comm Control' 'Basic comm control plugin';
+should_have 'Basic Info Triggers' 'Basic info triggers plugin';
+should_have 'Log Connections - LL Mod' 'LL version of "log connections" plugin';
 should_have 'WarMod \[BFG\] WarmUp Config Loaded' 'WarMod loaded config properly';
-should_have '======================BEGIN SERVER STATUS======================' 'LL status mod ran';
-should_lack '<Error>' 'LL status mod reports no errors';
-should_have 'Server Status-LL MOD' 'LL status mod reports itself';
-should_have '\[BFG\] WarMod' 'LL status mod reports WarMod';
-should_have 'Log Connections - LL Mod' 'LL status mod reports LL version of "log connections"';
-should_have 'Admin File Reader' 'LL status mod reports admin file reader';
-should_have 'Basic Info Triggers' 'LL status mod reports basic info triggers';
-should_have 'Basic Comm Control' 'LL status mod reports basic comm control';
-should_have 'Anti-Flood' "LL status mod reports anti-flood";
 should_lack 'Successfully updated gamedata file "' 'SourceMod is not self updating'
 should_lack 'SourceMod has been updated, please reload it or restart your server' 'SourceMod is not requesting restart'
+should_lack 'Host_Error: DLL_Crosshairangle: not a client' '2019.03.28 bug not found (https://forums.alliedmods.net/showthread.php?t=315229)'
+should_lack '<Error>' 'no sm plugins showing error state';
 
 # Verify server responds to commands
 echo "Starting command tests";

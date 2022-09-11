@@ -1,6 +1,6 @@
 # escape=`
 
-FROM lacledeslan/gamesvr-csgo-warmod
+FROM lacledeslan/gamesvr-csgo-warmod:latest
 
 HEALTHCHECK NONE
 
@@ -72,14 +72,14 @@ RUN FILE="/app/csgo/cfg/warmod/ruleset_overtime.cfg" &&`
         echo $'\n' >> "$FILE" &&`
         echo "bot_zombie 1" >> $FILE &&`
         echo "mp_maxrounds 4" >> $FILE &&`
-        echo "mp_overtime_maxrounds 3" >> $FILE 
+        echo "mp_overtime_maxrounds 3" >> $FILE
 
 RUN FILE="/app/csgo/cfg/warmod/ruleset_playout.cfg" &&`
         echo $'\n' >> "$FILE" &&`
         echo $'\n' >> "$FILE" &&`
         echo "bot_zombie 1" >> $FILE &&`
         echo "mp_maxrounds 4" >> $FILE &&`
-        echo "mp_overtime_maxrounds 3" >> $FILE 
+        echo "mp_overtime_maxrounds 3" >> $FILE
 
 RUN FILE="/app/csgo/cfg/warmod/ruleset_warmup.cfg" &&`
         echo $'\n' >> "$FILE" &&`

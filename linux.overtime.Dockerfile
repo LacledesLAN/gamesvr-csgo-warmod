@@ -1,6 +1,6 @@
 # escape=`
 
-FROM lacledeslan/gamesvr-csgo-warmod
+FROM lacledeslan/gamesvr-csgo-warmod:latest
 
 HEALTHCHECK NONE
 

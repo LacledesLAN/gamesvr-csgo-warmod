@@ -10,9 +10,20 @@ This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its c
 
 | Tag        | Description                                                |
 | ---------- | ---------------------------------------------------------- |
-| `latest`   | Normal game rules                                          |
+| `latest`   | LL tournament rules                                        |
 | `hasty`    | Configurations tweaked for shorter play and server testing |
-| `overtime` | Overtime game rules                                        |
+| `overtime` | LL overtime rules                                          |
+
+#### Server Test Scripts
+
+Configuration files exist for scenario testing; execute on the console of an executing server `exec LL/<name>.cfg`.
+
+| Config             | Description                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| 1v1test.cfg        | Allow for a match where you can have 1 player per team and a max of 8 rounds.                    |
+| 2v2test.cfg        | Allow for a match where you can have 2 players per team and a max of 8 rounds.                   |
+| bottest.cfg        | Enables a match of bots, full 30 rounds, and disables knife round. may need to run `/forcestart` |
+| bottest-8round.cfg | Enables a match of bots, 8 rounds, and disables knife round. may need to run `/forcestart`       |
 
 ### Download
 
@@ -22,10 +33,12 @@ docker pull lacledeslan/gamesvr-csgo-warmod;
 
 ### Run self tests
 
-The image includes a test script that can be used to verify its contents. No changes or pull-requests will be accepted to this repository if any tests fail.
+Images include test scripts that can be used to verify their contents. No changes or pull-requests will be accepted to this repository if any tests fail.
 
 ```shell
-docker run --rm lacledeslan/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod.sh;
+docker run --rm lacledeslan/gamesvr-csgo-warmod:latest ./ll-tests/gamesvr-csgo-warmod.sh;
+docker run --rm lacledeslan/gamesvr-csgo-warmod:hasty ./ll-tests/gamesvr-csgo-warmod-hasty.sh;
+docker run --rm lacledeslan/gamesvr-csgo-warmod:overtime ./ll-tests/gamesvr-csgo-warmod-overtime.sh;
 ```
 
 ## Warmod Flow

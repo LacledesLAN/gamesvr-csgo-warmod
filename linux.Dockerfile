@@ -17,9 +17,9 @@ LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
       org.label-schema.vcs-url="https://github.com/LacledesLAN/gamesvr-csgo-warmod"
 
 # `RUN true` lines are work around for https://github.com/moby/moby/issues/36573
-COPY --chown=CSGO:root /dist /app
+COPY --chown=CSGO:root /dist/app /app
 RUN true
-COPY --chown=CSGO:root /dist.linux /app/
+COPY --chown=CSGO:root /dist/linux /app/
 
 # UPDATE USERNAME & ensure permissions
 RUN usermod -l CSGOWarmod CSGO &&`

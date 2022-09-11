@@ -4,10 +4,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "Build & Run LL Tests",
+            "label": "Build Latest & Run LL Tests",
             "type": "shell",
             "command": "docker run --rm test/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod.sh;",
-            "dependsOn": "Build",
+            "dependsOn": "Linux - Build Latest Docker Image",
             "group": "build",
             "presentation": {
                 "reveal": "always",
@@ -16,10 +16,10 @@
             "problemMatcher": []
         },
         {
-            "taskName": "Build & Shell In",
+            "label": "Build Overtime & Run LL Tests",
             "type": "shell",
-            "command": "docker run --rm -it test/gamesvr-csgo-warmod;",
-            "dependsOn": "Build",
+            "command": "docker run --rm test/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod-overtime.sh;",
+            "dependsOn": "Linux - Build Overtime Docker Image",
             "group": "build",
             "presentation": {
                 "reveal": "always",
@@ -28,34 +28,36 @@
             "problemMatcher": []
         },
         {
-            "taskName": "Build & Run Local Server",
-            "type": "shell",
-            "command": "docker run -it --net=host lacledeslan/gamesvr-csgo-warmod ./srcds_run -game csgo +game_type 0 +game_mode 1 -console -usercon +map de_nuke +hostname \"gamesvr-csgo-warmod TEST\" +sv_lan 1 +mp_teamname_1 \"team1\" +mp_teamname_2 \"team2\" +rcon_password \"test123\" +tv_name \"gamesvr-csgo-tourney TV\" +tv_password \"test123\" +tv_relaypassword \"test123\"",
-            "dependsOn": "Build",
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
+            "label": "Linux - Build Latest Docker Image",
+            "type": "docker-build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dockerBuild": {
+                "context": "${workspaceFolder}",
+                "dockerfile": "${workspaceFolder}/linux.Dockerfile",
+                "tag": "lacledeslan/gamesvr-csgo-warmod:latest",
+                "labels": {
+                    "com.lacledeslan.build-node": "${env:computername}",
+                }
             }
         },
         {
-            "taskName": "Build",
-            "type": "shell",
-            "command": "clear; docker pull lacledeslan/gamesvr-csgo; docker build . -f linux.Dockerfile -t test/gamesvr-csgo-warmod --no-cache --build-arg BUILDNODE=localhost;",
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "taskName": "Pull Remote & Test",
-            "type": "shell",
-            "command": "docker pull lacledeslan/gamesvr-csgo-warmod; docker run --rm lacledeslan/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod.sh;",
-            "group": "none",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
+            "label": "Linux - Build Overtime Docker Image",
+            "dependsOn": "Linux - Build Docker Image",
+            "type": "docker-build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dockerBuild": {
+                "context": "${workspaceFolder}",
+                "dockerfile": "${workspaceFolder}/linux.Dockerfile",
+                "tag": "lacledeslan/gamesvr-csgo-warmod:overtime",
+                "labels": {
+                    "com.lacledeslan.build-node": "${env:computername}",
+                }
             }
         }
     ]

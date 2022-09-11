@@ -20,8 +20,7 @@ LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
 # Begun, the hasty hacks have
 #
 RUN FILE="/app/csgo/cfg/gamemode_competitive_server.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
         echo "bot_difficulty 0" >> $FILE &&`
         echo "bot_quota 2" >> $FILE &&`
         echo "bot_zombie 1" >> $FILE &&`
@@ -33,73 +32,51 @@ RUN FILE="/app/csgo/cfg/gamemode_competitive_server.cfg" &&`
         echo "mp_match_restart_delay 12" >> $FILE &&`
         echo "mp_maxrounds 4" >> $FILE &&`
         echo "mp_overtime_maxrounds 3" >> $FILE &&`
-        echo "mp_win_panel_display_time 3" >> $FILE &&`
         echo "sv_cheats 1" >> $FILE &&`
-        echo "wm_min_ready 1" >> $FILE
-
-RUN FILE="/app/csgo/cfg/server.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo "sv_cheats 1" >> $FILE
-
-RUN FILE="/app/csgo/cfg/warmod/on_match_end.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo "mp_win_panel_display_time 3" >> $FILE
-
-RUN FILE="/app/csgo/cfg/warmod/ruleset_default.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo "bot_zombie 1" >> $FILE &&`
-        echo "mp_maxrounds 4" >> $FILE &&`
-        echo "mp_overtime_maxrounds 3" >> $FILE
-
-RUN FILE="/app/csgo/cfg/warmod/ruleset_global.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
+        echo "wm_min_ready 1" >> $FILE &&`
+    FILE="/app/csgo/cfg/server.cfg" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
         echo "sv_cheats 1" >> $FILE &&`
-        echo "wm_min_ready 1" >> $FILE
-
-RUN FILE="/app/csgo/cfg/warmod/ruleset_knife.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
+    FILE="/app/csgo/cfg/warmod/on_match_end.cfg" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
+    FILE="/app/csgo/cfg/warmod/ruleset_default.cfg" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
         echo "bot_zombie 1" >> $FILE &&`
         echo "mp_maxrounds 4" >> $FILE &&`
-        echo "mp_overtime_maxrounds 3" >> $FILE
-
-RUN FILE="/app/csgo/cfg/warmod/ruleset_overtime.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
+        echo "mp_overtime_maxrounds 3" >> $FILE &&`
+    FILE="/app/csgo/cfg/warmod/ruleset_global.cfg" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
+        echo "sv_cheats 1" >> $FILE &&`
+        echo "wm_min_ready 1" >> $FILE &&`
+    FILE="/app/csgo/cfg/warmod/ruleset_knife.cfg" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
         echo "bot_zombie 1" >> $FILE &&`
         echo "mp_maxrounds 4" >> $FILE &&`
-        echo "mp_overtime_maxrounds 3" >> $FILE
-
-RUN FILE="/app/csgo/cfg/warmod/ruleset_playout.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
+        echo "mp_overtime_maxrounds 3" >> $FILE &&`
+    FILE="/app/csgo/cfg/warmod/ruleset_overtime.cfg" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
         echo "bot_zombie 1" >> $FILE &&`
         echo "mp_maxrounds 4" >> $FILE &&`
-        echo "mp_overtime_maxrounds 3" >> $FILE
-
-RUN FILE="/app/csgo/cfg/warmod/ruleset_warmup.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
+        echo "mp_overtime_maxrounds 3" >> $FILE &&`
+    FILE="/app/csgo/cfg/warmod/ruleset_playout.cfg" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
+        echo "bot_zombie 1" >> $FILE &&`
+        echo "mp_maxrounds 4" >> $FILE &&`
+        echo "mp_overtime_maxrounds 3" >> $FILE &&`
+    FILE="/app/csgo/cfg/warmod/ruleset_warmup.cfg" &&`
+        echo "\n\n//==Hasty Hacks" >> "$FILE" &&`
         echo "mp_buytime 5" >> $FILE &&`
         echo "mp_freezetime 5" >> $FILE &&`
         echo "sv_cheats 1" >> $FILE
 
-COPY --chown=CSGOWarmod:root /dist.linux /app/
-
 # UPDATE USERNAME & ensure permissions
-RUN usermod -l CSGOWarmodOvertime CSGOWarmod &&`
+RUN usermod -l CSGOWarmodHasty CSGOWarmod &&`
     chmod +x /app/ll-tests/*.sh &&`
     chmod 774 /app/csgo/cfg/*.cfg &&`
     chmod 774 /app/csgo/cfg/warmod/*.cfg
 
-USER CSGOWarmodOvertime
+USER CSGOWarmodHasty
 
 WORKDIR /app/
 
 CMD ["/bin/bash"]
-
-ONBUILD USER root

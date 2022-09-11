@@ -177,15 +177,12 @@ should_echo "mp_halftime_duration" 'mp_halftime_duration" = "8"';
 should_echo "mp_match_restart_delay" 'mp_match_restart_delay" = "12"';
 should_echo "mp_maxrounds" 'mp_maxrounds" = "4"';
 should_echo "mp_overtime_maxrounds" 'mp_overtime_maxrounds" = "3"';
-should_echo "mp_win_panel_display_time" 'mp_win_panel_display_time" = "3"';
 should_echo "wm_min_ready" 'wm_min_ready" = "1"';
 
 #======
 # Verify /app/csgo/cfg/warmod/on_match_end.cfg
 echo "...using /app/csgo/cfg/warmod/on_match_end.cfg";
 should_echo "exec /warmod/on_match_end.cfg" ''; sleep 2;
-
-should_echo "mp_win_panel_display_time" 'mp_win_panel_display_time" = "3"';
 
 #======
 # Verify /app/csgo/cfg/warmod/ruleset_default.cfg

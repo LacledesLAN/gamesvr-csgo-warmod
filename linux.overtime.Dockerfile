@@ -18,31 +18,22 @@ LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
 
 # This hack makes me cry (╯︵╰,) - doesn't help that POSIX shell doesn't support arrays either....
 RUN FILE="/app/csgo/cfg/gamemode_competitive_server.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo '//===OVERTIME HACK' >> "$FILE" &&`
+        echo "\n\n//==Overtime Hacks" >> "$FILE" &&`
         echo 'mp_maxrounds "7"' >> "$FILE" &&`
         echo 'mp_startmoney "10000" ' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
     FILE="/app/csgo/cfg/warmod/ruleset_default.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo '//===OVERTIME HACK' >> "$FILE" &&`
+        echo "\n\n//==Overtime Hacks" >> "$FILE" &&`
         echo 'mp_maxrounds "7"' >> "$FILE" &&`
         echo 'mp_startmoney "10000" ' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
     FILE="/app/csgo/cfg/warmod/ruleset_global.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo '//===OVERTIME HACK' >> "$FILE" &&`
+        echo "\n\n//==Overtime Hacks" >> "$FILE" &&`
         echo 'mp_maxrounds "7"' >> "$FILE" &&`
         echo 'mp_startmoney "10000" ' >> "$FILE" &&`
-        echo $'\n' >> "$FILE" &&`
     FILE="/app/csgo/cfg/warmod/ruleset_playout.cfg" &&`
-        echo $'\n' >> "$FILE" &&`
-        echo '//===OVERTIME HACK' >> "$FILE" &&`
+        echo "\n\n//==Overtime Hacks" >> "$FILE" &&`
         echo 'mp_maxrounds "7"' >> "$FILE" &&`
         echo 'mp_startmoney "10000" ' >> "$FILE" &&`
         echo $'\n' >> "$FILE"
-
-COPY --chown=CSGOWarmod:root /dist.linux /app/
 
 # UPDATE USERNAME & ensure permissions
 RUN usermod -l CSGOWarmodOvertime CSGOWarmod &&`

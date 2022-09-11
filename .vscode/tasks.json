@@ -6,8 +6,20 @@
         {
             "label": "Build Latest & Run LL Tests",
             "type": "shell",
-            "command": "docker run --rm test/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod.sh;",
+            "command": "docker run --rm lacledeslan/gamesvr-csgo-warmod:latest ./ll-tests/gamesvr-csgo-warmod.sh;",
             "dependsOn": "Linux - Build Latest Docker Image",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Hasty & Run LL Tests",
+            "type": "shell",
+            "command": "docker run --rm lacledeslan/gamesvr-csgo-warmod:hasty ./ll-tests/gamesvr-csgo-warmod-hasty.sh;",
+            "dependsOn": "Linux - Build Hasty Docker Image",
             "group": "build",
             "presentation": {
                 "reveal": "always",
@@ -18,7 +30,7 @@
         {
             "label": "Build Overtime & Run LL Tests",
             "type": "shell",
-            "command": "docker run --rm test/gamesvr-csgo-warmod ./ll-tests/gamesvr-csgo-warmod-overtime.sh;",
+            "command": "docker run --rm lacledeslan/gamesvr-csgo-warmod:overtime ./ll-tests/gamesvr-csgo-warmod-overtime.sh;",
             "dependsOn": "Linux - Build Overtime Docker Image",
             "group": "build",
             "presentation": {
@@ -44,6 +56,22 @@
             }
         },
         {
+            "label": "Linux - Build Hasty Docker Image",
+            "type": "docker-build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dockerBuild": {
+                "context": "${workspaceFolder}",
+                "dockerfile": "${workspaceFolder}/linux.hasty.Dockerfile",
+                "tag": "lacledeslan/gamesvr-csgo-warmod:hasty",
+                "labels": {
+                    "com.lacledeslan.build-node": "${env:computername}",
+                }
+            }
+        },
+        {
             "label": "Linux - Build Overtime Docker Image",
             "dependsOn": "Linux - Build Docker Image",
             "type": "docker-build",
@@ -53,7 +81,7 @@
             },
             "dockerBuild": {
                 "context": "${workspaceFolder}",
-                "dockerfile": "${workspaceFolder}/linux.Dockerfile",
+                "dockerfile": "${workspaceFolder}/linux.overtime.Dockerfile",
                 "tag": "lacledeslan/gamesvr-csgo-warmod:overtime",
                 "labels": {
                     "com.lacledeslan.build-node": "${env:computername}",

@@ -1,9 +1,6 @@
 #!/bin/bash
-set -e
-
-echo -e '\n\033[1m[Preflight Checks]\033[0m'
-echo -e "Docker client version: '$(docker version --format '{{.Client.Version}}')'"
-echo -e "Docker server version: '$(docker version --format '{{.Server.Version}}')'"
+set -e;
+set -u;
 
 
 echo -e '\n\033[1m[Build warmod:latest]\033[0m'

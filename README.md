@@ -2,10 +2,7 @@
 
 ![thumb-csgo-warmod](https://raw.githubusercontent.com/LacledesLAN/gamesvr-csgo-warmod/master/.misc/thumb-csgo-warmod.png "thumb-csgo-warmod")
 
-This repository is maintained by [Laclede's LAN](https://lacledeslan.com). Its contents are heavily tailored and tweaked
-for use at our charity LAN-Parties. For third-parties we recommend using this repo only as a reference example and then
-building your own using [gamesvr-csgo](https://github.com/LacledesLAN/gamesvr-csgo) as the base image for your
-customized server.
+**THIS PROJECT IS RETIRED AND NO LONGER SUPPORTED**
 
 ## Linux
 
@@ -27,23 +24,6 @@ Configuration files exist for scenario testing; execute on the console of an exe
 | 2v2test.cfg        | Allow for a match where you can have 2 players per team and a max of 8 rounds.                   |
 | bottest.cfg        | Enables a match of bots, full 30 rounds, and disables knife round. may need to run `/forcestart` |
 | bottest-8round.cfg | Enables a match of bots, 8 rounds, and disables knife round. may need to run `/forcestart`       |
-
-### Download
-
-```shell
-docker pull lacledeslan/gamesvr-csgo-warmod;
-```
-
-### Run self tests
-
-Images include test scripts that can be used to verify their contents. No changes or pull-requests will be accepted to
-this repository if any tests fail.
-
-```shell
-docker run --rm lacledeslan/gamesvr-csgo-warmod:latest ./ll-tests/gamesvr-csgo-warmod.sh;
-docker run --rm lacledeslan/gamesvr-csgo-warmod:hasty ./ll-tests/gamesvr-csgo-warmod-hasty.sh;
-docker run --rm lacledeslan/gamesvr-csgo-warmod:overtime ./ll-tests/gamesvr-csgo-warmod-overtime.sh;
-```
 
 ## Warmod Flow
 
